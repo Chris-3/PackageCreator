@@ -6,6 +6,7 @@
 
 #define DEBUG 0
 #define DEBUG1 0
+#define VISUAL_STUD 1
 
 #include "get_filenames.h"
 #include "Grit.h"
@@ -30,8 +31,8 @@ int main(int argc, char* argv[])
 {
 	std::vector<std::string> fnames;
 	//in dieser Liste (fnames) wird der komplette Pfad aller Dateien des Zielverzeichnisses gespeichert
-	//if (argc < 2) getFileNames("D:/Programmieren/Masterarbeit_andrea/Partikel", fnames);
-	if (argc < 2) getFileNames("-", fnames);//Default Modus
+	if (argc < 2 && VISUAL_STUD) getFileNames("D:/Programmieren/Masterarbeit_andrea/Partikel", fnames);
+	if (argc < 2 && !VISUAL_STUD) getFileNames("-", fnames);//Default Modus
 	else get_default_settings(argc, argv, fnames);//Called if programm gets parameters
 	
 
