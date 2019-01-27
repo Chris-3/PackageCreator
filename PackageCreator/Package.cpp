@@ -114,7 +114,7 @@ Package::Package(std::string const& d) :pack_path(d)
 	//here are the scaling factors with according solid limits printed 
 	for (auto it = por_threshold.rbegin(); it != por_threshold.rend(); ++it)
 	{
-		cout << "\n Basic scale: " << it->first 
+		cout << "\n Basic scale: " << it->first
 			<< "\t=>\t Solid share border: " << static_cast<double>(it->second) / static_cast<double>(max_vol) * 100 << "%";
 	}
 	cout << "\n\n";
@@ -205,7 +205,7 @@ void Package::CheckIfFree(Grit& p, const coordinate<int> & v)
 		spin_and_scale(n, p);
 		n = n + v;
 		IsInFrame(n);
-		if (package[n.x][n.y][n.z])return; 
+		if (package[n.x][n.y][n.z])return;
 	}
 	AddGrit(p, v);
 	return;
@@ -216,11 +216,11 @@ void Package::FillPackage(std::vector<Grit>& particles)
 //this function fills the package with particles
 {
 	coordinate<int> v;
-	int grit_nr, last_grit_nr=0;
+	int grit_nr, last_grit_nr = 0;
 
 	while (true)
 	{
-		
+
 		if (it_now->second <= solid_vox && !GRIT_COUNT) ++it_now;
 		if (it_now->second <= count && GRIT_COUNT) ++it_now;
 		if (it_now == por_threshold.rend())return;
@@ -228,8 +228,10 @@ void Package::FillPackage(std::vector<Grit>& particles)
 		v = Random_V_int(dim_pack);
 		if (package[v.x][v.y][v.z])continue;
 		grit_nr = Random_No(particles.size() - 1);
-		if (grit_nr == last_grit_nr&& particles.size()>1)continue;
+		//cout << grit_nr << " ";
+		if (grit_nr == last_grit_nr) continue;// && particles.size() > 1)continue;
 		CheckIfFree(particles[grit_nr], v);
+		//cout << "\n";
 		last_grit_nr = grit_nr;
 	}
 }
@@ -267,8 +269,8 @@ void Package::CreateFile()
 			{
 				if (!(z % 2))fileo << std::to_string(y[z / 2]);
 				if ((z % 2))fileo << ' ';
-							}
-			
+			}
+
 		}
 		if (perc < (i / dim_pack.x) * 100)
 		{
@@ -348,10 +350,11 @@ void Package::Status(Grit const& p)
 		<< std::setw(2) << (static_cast<int>(t) % 3600) / 60 << ":"
 		<< std::setw(2) << static_cast<int>(t) % 60;
 	std::cout
-		<< " total solid share: " << static_cast<double>(solid_vox) / static_cast<double>(max_vol) * 100 << "%"
+		<< " Total solid share: " << static_cast<double>(solid_vox) / static_cast<double>(max_vol) * 100 << "%"
 		<< "\n Particle count: " << count
 		<< "\n Solid voxel: " << solid_vox
-		<< "\n Paticle ID: " << p.id << "\t Real scale: " << real_scale << "\t Volume: " << added_vox
+		<< "\n Empty voxel: " << max_vol - solid_vox
+		<< "\n Paticle ID: " << p.id << "\t Real scale: " << real_scale * 100 << "% = " << por_threshold.rbegin()->first*real_scale << "mm \t Volume: " << added_vox
 		<< "\n Nr. of tries: " << tried
 		<< "\n Basic scale (" << it_now->first << ") up to " << static_cast<double>(it_now->second) / static_cast<double>(max_vol) * 100 << "%  => " << it_now->second << " Voxel"
 		<< "\n Current runtime: " << time.str()
@@ -370,14 +373,14 @@ void Package::Status(Grit const& p)
 		;
 	if (MORE_INFO)
 	{
-oss<< "\t" << p.v_trans
-		<< "\t" << p.rot_v
-		<< "\t" << p.rot_alpha
-		;
-for (auto i : p.frame_points_new) oss << i;
+		oss << "\t" << p.v_trans
+			<< "\t" << p.rot_v
+			<< "\t" << p.rot_alpha
+			;
+		for (auto i : p.frame_points_new) oss << i;
 	}
-		
-	
+
+
 	oss << "\n";
 	stat.push_back(oss.str());
 	cout << "\n\n";

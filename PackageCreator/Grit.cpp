@@ -105,6 +105,7 @@ void Grit::GetId(std::string const & d)
 {
 	for (auto i = (d.find("Particle_") + 9); d[i] != '_'; i++)
 	{
+		if (d[i] == '.')break;
 		id.push_back(d[i]);
 	}
 	/*for (auto i = (d.find("Scaled_") + 7); d[i] != '.'; i++)
