@@ -6,7 +6,7 @@
 
 #define DEBUG 0
 #define DEBUG1 0
-#define VISUAL_STUD 1
+#define VISUAL_STUD 0
 
 #include "get_filenames.h"
 #include "Grit.h"
@@ -70,7 +70,7 @@ bool getGritsofScale(std::vector<Grit> &x, std::vector<std::string> const& fname
 	for (unsigned int i = 0; i < fnames.size(); i++)
 	{
 		//if (fnames[i].find(std::to_string(sc).erase(3, std::string::npos)) != std::string::npos)
-		if (fnames[i].find("Particle_") != std::string::npos)
+		if (fnames[i].rfind("Particle_") != std::string::npos)
 		{
 			//if (DEBUG1)cout << fnames[i];
 			Grit n(fnames[i]);

@@ -316,7 +316,7 @@ void Package::CreateFile()
 	fileo.close();
 
 	std::cout << "\n file schreiben fertig\n";
-
+	std::cin.get();
 }
 
 void Package::get_stat(const std::ostringstream& time, int& count_p_scale)
@@ -348,12 +348,12 @@ void Package::Status(Grit const& p)
 		<< std::setw(2) << (static_cast<int>(t) % 3600) / 60 << ":"
 		<< std::setw(2) << static_cast<int>(t) % 60;
 	std::cout
-		<< " Solid share: " << static_cast<double>(solid_vox) / static_cast<double>(max_vol) * 100 << "%"
+		<< " total solid share: " << static_cast<double>(solid_vox) / static_cast<double>(max_vol) * 100 << "%"
 		<< "\n Particle count: " << count
 		<< "\n Solid voxel: " << solid_vox
 		<< "\n Paticle ID: " << p.id << "\t Real scale: " << real_scale << "\t Volume: " << added_vox
 		<< "\n Nr. of tries: " << tried
-		<< "\n Basic scale (" << it_now->first << ") bis " << static_cast<double>(it_now->second) / static_cast<double>(max_vol) * 100 << "%  => " << it_now->second << " Voxel"
+		<< "\n Basic scale (" << it_now->first << ") up to " << static_cast<double>(it_now->second) / static_cast<double>(max_vol) * 100 << "%  => " << it_now->second << " Voxel"
 		<< "\n Current runtime: " << time.str()
 		<< "\n time to add: " << t - t_add << "sec";
 	count_p_scale++;
