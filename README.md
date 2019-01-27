@@ -1,2 +1,2 @@
 # PackageCreator
-PackageCreator is a programm working and creating with and for Geodict simulation software
+PackageCreator is a programm which creates packages for Geodict simulation software
