@@ -100,7 +100,8 @@ inline coordinate<T> abs(const coordinate<T> & a)
 }
 
 /*****************************************************************************
-the following class manages the initialisation of Particles
+the following class manages the initialisation of Particles and 
+documents the parameters of scaled and spinned particles
 *****************************************************************************/
 
 
@@ -133,20 +134,20 @@ private:
 	//outer limits of the particle (original file)
 	std::vector<coordinate<int16_t>> frame_points_new;
 	//outer limits of the particle (spinned and scaled)
-
 	uint32_t volume_or;
-	//Anzahl der Voxel eines Partikels ->>original file
+	//original Volume of particle
 	uint32_t volume;
-	//Anzahl der Voxel eines Partikels
+	//volume after spinning and scaling
 	std::string id;
-	//ID des Partikels
-	//int num_of_id;
-	//anzahl der Partikel dieser ID in der gesamtpackung
+	//modelnumber of particle
 	std::string grit_path;
-	//Speicherpfad der Ursprungsdatei
+	//filepath of source file
 	coordinate<double> rot_v;
+	//parameter for rotation matrix (unit vector)
 	double rot_alpha;
+	//parameter for rotation matrix (alpha)
 	coordinate<int16_t> v_trans;
+	//new center of gravity in package
 
 	void get_id(std::string const&);
 	//extracts Modelnumber from filename

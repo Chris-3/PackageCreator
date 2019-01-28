@@ -8,10 +8,6 @@
 #define DEBUG1 0
 #define VISUAL_STUD 0
 
-#include "get_filenames.h"
-#include "Grit.h"
-#include "Package.h"
-
 bool SPIN = true;
 bool GRIT_COUNT = false;
 bool MORE_INFO = false;
@@ -20,7 +16,9 @@ bool COLOUR_ID = true;
 bool LOAD_PACKAGE = false;
 bool CURRENT_DIR = true;
 
-
+#include "get_filenames.h"
+#include "Grit.h"
+#include "Package.h"
 
 bool getGritsofScale(std::vector<Grit> &, const std::vector<std::string> &, const double&);
 // this function searches for every file named "Particle_" and creates a Grit object for each
@@ -30,13 +28,11 @@ void get_default_settings(int, char**, std::vector<std::string>&);
 
 int main(int argc, char* argv[])
 {
-	cout << "\n*********PackageCreator v3.0*********\n";
+	cout << "\n*********PackageCreator*********\n";
 	std::vector<std::string> fnames;
 	//here are all filenames in target directory saved
-	if (argc < 2 && VISUAL_STUD) get_filenames("D:/Programmieren/Masterarbeit_andrea/Partikel", fnames);
-	if (argc < 2 && !VISUAL_STUD) //Default Modus
-		get_default_settings(argc, argv, fnames);//Called if programm gets parameters
-
+	
+	get_default_settings(argc, argv, fnames);
 
 	for (auto const & param : fnames)
 	{
@@ -46,35 +42,32 @@ int main(int argc, char* argv[])
 
 			std::vector<Grit> x;//this will be the list of the original particles
 
-			if (!getGritsofScale(x, fnames, pack.GetScale()->first))
+			if (!getGritsofScale(x, fnames, pack.get_scale()->first))
 			{
-				std::cout << "No file with name \"Particle_\" found\n";
-				break;
+				std::cout << "No file with name \"Particle_\" found\n press any key to continue\n";
+				std::cin.get();
+				return 0;
 			}
 
 			std::cout << "\n Start adding particles: \n";
-			pack.FillPackage(x);
+			pack.fill_package(x);
 			return 0;
 		}
 	}
-	std::cout << "No file with name \"Parameter\" found\n";
+	std::cout << "No file with name \"Parameter\" found\n press any key to continue\n";
 	std::cin.get();
 	return 0;
 }
 
 
+//this function fills list with particle data (returns false when no particle files)
 bool getGritsofScale(std::vector<Grit> &x, std::vector<std::string> const& fnames, const double& sc)
-//this function fills list with particle data
-//returns false when no  particle files
 {
 	bool no_file = false;
-	//if (DEBUG)std::cout << sc << std::endl;
 	for (unsigned int i = 0; i < fnames.size(); i++)
 	{
-		//if (fnames[i].find(std::to_string(sc).erase(3, std::string::npos)) != std::string::npos)
 		if (fnames[i].rfind("Particle_") != std::string::npos)
 		{
-			//if (DEBUG1)cout << fnames[i];
 			Grit n(fnames[i]);
 			x.push_back(n);
 			no_file = true;
@@ -123,55 +116,14 @@ void get_default_settings(int argc, char ** argv, std::vector<std::string>& fnam
 			continue;
 		case '6':
 			CURRENT_DIR = !CURRENT_DIR;
-			cout << "\n sorry doesn't work jet \n";
 			continue;
 		case '7':
 			FILL_HOLES = !FILL_HOLES;
 			continue;
 		default:
-			if (CURRENT_DIR) get_filenames("-", fnames);
-			if (!CURRENT_DIR)
-			{
-				cout << "\n Enter Working directory: \n";
-				std::cin >> dir;
-				get_filenames(dir, fnames);
-
-			}
+			while (!get_filenames(fnames));
+			
 			return;
 		}
-
-		/*if (argv[i] == "-s")
-		{
-			SPIN = !SPIN;
-			continue;
-		}
-		if (argv[i] == "-n")
-		{
-			GRIT_COUNT = !GRIT_COUNT;
-			continue;
-		}
-		if (argv[i] == "-i")
-		{
-			MORE_INFO = !MORE_INFO;
-			continue;
-		}
-		if (argv[i] == "-f")
-		{
-			FILL_HOLES = !FILL_HOLES;
-			continue;
-		}
-		if (argv[i] == "-c")
-		{
-			COLOUR_ID = !COLOUR_ID;
-			continue;
-		}*/
-		/*if (argv[i] == "-l")
-		{
-			LOAD_PACKAGE = !LOAD_PACKAGE;
-			i++;
-			fnames.push_back(argv[i]);
-			continue;
-		}*/
-		//get_filenames(argv[i], fnames);
 	}
 }

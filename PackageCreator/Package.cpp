@@ -3,18 +3,9 @@
 
 #define DEBUG 0
 #define DEBUG1 0
-#define PACK_INIT 1
 
-extern bool SPIN;
-extern bool GRIT_COUNT;
-extern bool MORE_INFO;
-extern bool FILL_HOLES;
-extern bool COLOUR_ID;
-
-
-
+//this function generates a random int16_t 3D vector
 inline coordinate<int16_t> Random_V_int(const coordinate<int16_t> & n)
-// generiert einen neuen Mittelpunkt fuer das Partikel in der Packung aus
 {
 	std::random_device rd;
 	pcg rand(rd);
@@ -25,8 +16,8 @@ inline coordinate<int16_t> Random_V_int(const coordinate<int16_t> & n)
 	return { static_cast<int16_t>(x(rand)),static_cast<int16_t>(y(rand)),static_cast<int16_t>(z(rand)) };
 }
 
+//this function generates a random double 3D vector
 inline coordinate<double> Random_V_double(const coordinate<int16_t> & n)
-// generiert einen neuen Mittelpunkt fuer das Partikel in der Packung aus
 {
 	std::random_device rd;
 	pcg rand(rd);
@@ -37,8 +28,8 @@ inline coordinate<double> Random_V_double(const coordinate<int16_t> & n)
 	return { x(rand),y(rand),z(rand) };
 }
 
-inline int Random_No(const unsigned int &n)
 // generates random Int
+inline int Random_No(const unsigned int &n)
 {
 	std::random_device rd;
 	pcg rand(rd);
@@ -46,8 +37,8 @@ inline int Random_No(const unsigned int &n)
 	return p(rand);
 }
 
-inline double Random_No(const double& n)
 // generates random double
+inline double Random_No(const double& n)
 {
 	std::random_device rd;
 	pcg rand(rd);
@@ -55,9 +46,6 @@ inline double Random_No(const double& n)
 	return p(rand);
 }
 
-
-
-//Package::Package() {}
 Package::Package(std::string const& d) :pack_path(d)
 {
 	run_t = steady_clock::now();
@@ -66,7 +54,7 @@ Package::Package(std::string const& d) :pack_path(d)
 	uint32_t temp = 0;
 	tried = 0;
 	colour = 1;
-	grit_choice = 0; 
+	grit_choice = 0;
 	//here Parameters are read from Parameter file
 	if (file.is_open())
 	{
@@ -83,28 +71,24 @@ Package::Package(std::string const& d) :pack_path(d)
 	it_now = por_threshold.rbegin();
 
 	//here the 3D Array for the Package is created this variable will be saved in output file
-	if (PACK_INIT)
-	{
 		double i = 0;
-		int perc = 10;
-		package.resize(dim_pack.x);
-		for (auto& y : package)
+	int perc = 10;
+	package.resize(dim_pack.x);
+	for (auto& y : package)
+	{
+		y.resize(dim_pack.y);
+		for (auto& z : y)
 		{
-			y.resize(dim_pack.y);
-			for (auto& z : y)
-			{
-				z.resize(dim_pack.z, 0);
-			}
-			if (perc < (i / dim_pack.x) * 100)
-			{
-				std::cout << "Initialise package: " << perc << "%\n";
-				perc += 10;
-			}
-
-			i++;
+			z.resize(dim_pack.z, 0);
 		}
-	}
+		if (perc < (i / dim_pack.x) * 100)
+		{
+			std::cout << "Initialise package: " << perc << "%\n";
+			perc += 10;
+		}
 
+		i++;
+	}
 	//here is a general summery of the stats printed in command line
 	cout << "\n\n Package parameters:"
 		<< "\n Package volume: " << max_vol
@@ -123,9 +107,10 @@ Package::Package(std::string const& d) :pack_path(d)
 
 Package::~Package()
 {
-	CreateFile();
+	create_file();
 }
 
+//spins the vector and scales it
 inline void Package::spin_and_scale(coordinate<int16_t> &v, const Grit& p)
 {
 	coordinate<double> x = v * static_cast<double>(1);
@@ -139,6 +124,7 @@ inline void Package::spin_and_scale(coordinate<int16_t> &v, const Grit& p)
 	v = { static_cast<int16_t>(x.x),static_cast<int16_t>(x.y),static_cast<int16_t>(x.z) };
 }
 
+//creates line for statistic for each particle added to package
 inline void Package::fill_holes(coordinate<int16_t>& n, const int &i)
 {
 	n = { n.x + dir_to_center(n).x * v_fill[i].x,
@@ -146,7 +132,8 @@ inline void Package::fill_holes(coordinate<int16_t>& n, const int &i)
 	n.z + dir_to_center(n).z * v_fill[i].z };
 }
 
-void Package::AddGrit(Grit& p_to_add, const coordinate<int16_t> &v)
+//if all checks are valid this function inserts particle at given position and orientation
+void Package::add_grit(Grit& p_to_add, const coordinate<int16_t> &v)
 {
 	added_vox = 0;
 	if (DEBUG) std::cout << "\n Patikel einfuegen\n";
@@ -154,7 +141,7 @@ void Package::AddGrit(Grit& p_to_add, const coordinate<int16_t> &v)
 	{
 		spin_and_scale(n, p_to_add);
 		n = n + v;
-		IsInFrame(n);
+		is_in_frame(n);
 		unsigned int fill;
 		if (FILL_HOLES)fill = v_fill.size();
 		if (!FILL_HOLES)fill = 1;
@@ -162,29 +149,26 @@ void Package::AddGrit(Grit& p_to_add, const coordinate<int16_t> &v)
 		{
 			fill_holes(n, i);
 			if (package[n.x][n.y][n.z])continue;
-			IsInFrame(n);
-			package[n.x][n.y][n.z] = colour; //static_cast<uint8_t>(it_now->first);
+			is_in_frame(n);
+			package[n.x][n.y][n.z] = colour;
 			solid_vox++;
 			added_vox++;
 			break;
 		}
 	}
 	count++;
-	Status(p_to_add);
+	status(p_to_add);
 	tried = 0;
 	grit_choice = Random_No(nr_of_grit);
 }
 
 
-void Package::CheckIfFree(Grit& p, const coordinate<int16_t> & v)
+//checks for existing particles were new particle should be inserted
+void Package::check_if_free(Grit& p, const coordinate<int16_t> & v)
 {
-	//if (package[p_to_check.center_p.x][p_to_check.center_p.y][p_to_check.center_p.z]) return false;
-	//if (DEBUG1) std::cout << " check Eckpunkte\n";
+	
 	p.get_rot_param(Random_V_double(dim_pack).normalized(), Random_No(M_PI * 2));
-	/*static int j = 0;
-	p.get_rot_param(v_fill[j]* static_cast<double>(1), 0);
-	j++;
-	if (j >= v_fill.size()-1)j = 0;*/
+	
 	real_scale = (it_now->first / por_threshold.rbegin()->first) + ((Random_No(scale_diversity * 2) / 100.0) - (scale_diversity / 100.0))* (it_now->first / por_threshold.rbegin()->first);
 	p.v_trans = v;
 	int n_new = 0;
@@ -193,32 +177,30 @@ void Package::CheckIfFree(Grit& p, const coordinate<int16_t> & v)
 	{
 		spin_and_scale(n, p);
 		p.frame_points_new[n_new++] = n;
-		if (DEBUG)cout << " n2:" << n;
 		n = n + v;
-		IsInFrame(n);
-		if (DEBUG)cout << " n3:" << n;
+		is_in_frame(n);
 		if (package[n.x][n.y][n.z])return;
 	}
 	n_new = 0;
-	if (DEBUG)cout << "\n\n";
+
 	for (auto n : p.p_img)
 	{
 		spin_and_scale(n, p);
 		n = n + v;
-		IsInFrame(n);
+		is_in_frame(n);
 		if (package[n.x][n.y][n.z])return;
 	}
-	AddGrit(p, v);
+	add_grit(p, v);
 	return;
 }
 
 
-void Package::FillPackage(std::vector<Grit>& particles)
 //this function fills the package with particles
+void Package::fill_package(std::vector<Grit>& particles)
 {
 	coordinate<int16_t> v;
 	nr_of_grit = particles.size() - 1;
-	
+
 	while (true)
 	{
 		if (it_now->second <= solid_vox && !GRIT_COUNT) ++it_now;
@@ -227,23 +209,20 @@ void Package::FillPackage(std::vector<Grit>& particles)
 		tried++;
 		v = Random_V_int(dim_pack);
 		if (package[v.x][v.y][v.z])continue;
-		
-		CheckIfFree(particles[grit_choice], v);
+
+		check_if_free(particles[grit_choice], v);
 	}
 }
 
-std::map<double, uint32_t>::const_reverse_iterator Package::GetScale()
+//returns current basic scale and solid share border
+std::map<double, uint32_t>::const_reverse_iterator Package::get_scale()
 {
 	return it_now;
 }
 
-bool Package::IsNotFull()
-{
-	if ((max_solid / 100)*max_vol > solid_vox)return true;
-	return false;
-}
 
-void Package::CreateFile()
+//generates output file from calculated package
+void Package::create_file()
 {
 	double i = 0;
 	int perc = 5;
@@ -251,20 +230,18 @@ void Package::CreateFile()
 
 	std::cout << "\n write file in: " << pack_path << "\n";
 
-	std::ofstream fileo;
-	//std::ostringstream oss;
-	fileo.open(pack_path);
-	fileo << dim_pack.x << ' ' << dim_pack.y << ' ' << dim_pack.z;
-	bool k = true;
+	std::ofstream file;
+	file.open(pack_path);
+	file << dim_pack.x << ' ' << dim_pack.y << ' ' << dim_pack.z;
 	for (auto const& x : package)
 	{
 		for (auto const& y : x)
 		{
-			fileo << '\n';
+			file << '\n';
 			for (unsigned int z = 0; z < ((y.size() * 2) - 1); z++)
 			{
-				if (!(z % 2))fileo << std::to_string(y[z / 2]);
-				if ((z % 2))fileo << ' ';
+				if (!(z % 2))file << std::to_string(y[z / 2]);
+				if ((z % 2))file << ' ';
 			}
 
 		}
@@ -275,7 +252,7 @@ void Package::CreateFile()
 		}
 		i++;
 	}
-	fileo.close();
+	file.close();
 	std::cout << "\n";
 
 	steady_clock::time_point run_t_now = steady_clock::now();
@@ -289,8 +266,8 @@ void Package::CreateFile()
 	pack_path.replace(pack_path.begin() + pack_path.find_last_of('/') + 1, pack_path.end(), "statistic.txt");
 	std::cout << "\n write statistics in: " << pack_path << "\n";
 
-	fileo.open(pack_path);
-	fileo << " Dimension: \t" << dim_pack
+	file.open(pack_path);
+	file << " Dimension: \t" << dim_pack
 		<< "\n Porosity: \t" << 100 - static_cast<double>(solid_vox) / static_cast<double>(max_vol) * 100 << "%"
 		<< "\n Scale Diversity: \t" << scale_diversity << "%"
 		<< "\n Solid Voxel: \t" << solid_vox
@@ -298,25 +275,26 @@ void Package::CreateFile()
 		<< "\n Time to create: \t" << time.str()
 		<< "\n\n";
 
-	fileo << "Runtime" << "\tBasic_scale" << "\tNumber_of_Particles" << "\tSolid_share" << "\tSolid_voxel" << "\n";
+	file << "Runtime" << "\tBasic_scale" << "\tNumber_of_Particles" << "\tSolid_share" << "\tSolid_voxel" << "\n";
 
 	for (auto const& line : stat_general)
 	{
-		fileo << line;
+		file << line;
 	}
 
-	fileo << "\n\nRuntime" << "\tBasic_scale" << "\tReal_scale" << "\tModelnumber" << "\tVolume" << "\n";
+	file << "\n\nRuntime" << "\tBasic_scale" << "\tReal_scale" << "\tModelnumber" << "\tVolume" << "\n";
 
 	for (auto const& line : stat)
 	{
-		fileo << line;
+		file << line;
 	}
-	fileo.close();
+	file.close();
 
 	std::cout << "\n file schreiben fertig\n";
 	std::cin.get();
 }
 
+//creates line for statistic for each particle added to package
 void Package::get_stat(const std::ostringstream& time, int& count_p_scale)
 {
 	std::ostringstream oss2;
@@ -329,9 +307,11 @@ void Package::get_stat(const std::ostringstream& time, int& count_p_scale)
 	stat_general.push_back(oss2.str());
 	count_p_scale = 0;
 	if (COLOUR_ID)colour++;
+	if (colour < 16)colour = 1;
 }
 
-void Package::Status(Grit const& p)
+//prints the current status after adding particle/grit
+void Package::status(Grit const& p)
 {
 	steady_clock::time_point run_t_now = steady_clock::now();
 	duration<double> runtime = duration_cast<duration<double>>(run_t_now - run_t);
@@ -384,8 +364,8 @@ void Package::Status(Grit const& p)
 
 }
 
-inline void Package::IsInFrame(coordinate<int16_t> & i)
 //checks vector for periodicity
+inline void Package::is_in_frame(coordinate<int16_t> & i)
 {
 	if (i.x < 0)i.x = dim_pack.x + i.x;
 	if (i.x >= dim_pack.x)i.x = i.x - dim_pack.x;
@@ -397,6 +377,7 @@ inline void Package::IsInFrame(coordinate<int16_t> & i)
 	if (i.z >= dim_pack.z)i.z = i.z - dim_pack.z;
 }
 
+//creates a vektor pointing from point to center of gravity
 inline coordinate<int16_t> Package::dir_to_center(coordinate<int16_t> v_temp)
 {
 	if (abs(v_temp.x)) v_temp.x = v_temp.x / abs(v_temp.x);

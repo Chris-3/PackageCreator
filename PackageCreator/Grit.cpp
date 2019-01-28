@@ -14,9 +14,8 @@ Grit::Grit(std::string const& d) :grit_path(d)
 	uint32_t count = 0;
 	bool voxl = 0;
 	bool hasbeenGrit = false;
-//	num_of_id = 0;
-	std::cout << "\n Initialise Particle: " << grit_path << "\n";
 
+	std::cout << "\n Initialise Particle: " << grit_path << "\n";
 	if (file.is_open())
 	{
 		file >> dim_part.x >> dim_part.y >> dim_part.z;
@@ -24,10 +23,10 @@ Grit::Grit(std::string const& d) :grit_path(d)
 		{
 			if (voxl)
 			{
+				//create vektor from file
 				coordinate<int16_t> x = { static_cast<int16_t>(count / (dim_part.z*dim_part.y))
 					, static_cast<int16_t>((count % (dim_part.z*dim_part.y)) / dim_part.z)
-					, static_cast<int16_t>(count%dim_part.z) };//create vektor from file
-				//if(DEBUG)x.print();
+					, static_cast<int16_t>(count%dim_part.z) };
 				p_img.push_front(x);
 				volume++;
 				hasbeenGrit = true;
@@ -91,7 +90,6 @@ void Grit::convert_coordinates()
 	}
 	for (auto& n : frame_points)
 	{
-
 		n = n - center_p;
 	}
 }
@@ -103,14 +101,7 @@ void Grit::get_id(std::string const & d)
 		if (d[i] == '.')break;
 		id.push_back(d[i]);
 	}
-	/*for (auto i = (d.find("Scaled_") + 7); d[i] != '.'; i++)
-	{
-		scale.push_back(d[i]);
-	}*/
 }
-
-
-
 
 void Grit::get_rot_param(const coordinate<double>& _rot_v, const double & _rot_alpha)
 {

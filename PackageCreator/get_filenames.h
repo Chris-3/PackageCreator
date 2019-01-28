@@ -4,17 +4,21 @@
 using std::cout;
 using std::string;
 using namespace boost::filesystem;
-double default_perc[] = { 16.0, 23.0, 35.0, 4.7, 0.2, 0.1 };
 
-void get_filenames(path p, std::vector<std::string> &fnames)
 //this function searches targed directory and saves all filenames in fnames 
+bool get_filenames(std::vector<std::string> &fnames)
 {
-	//std::vector<path> v;
+	path p;
 	try
 	{
-		if (p == "-")
+		if (CURRENT_DIR)
 		{
 			p = current_path();
+		}
+		if (!CURRENT_DIR)
+		{
+			cout << "\n Enter Working directory: \n";
+			std::cin >> p;
 		}
 		if (exists(p))
 		{
@@ -23,27 +27,25 @@ void get_filenames(path p, std::vector<std::string> &fnames)
 
 			else if (is_directory(p))
 			{
-				//cout << p << " is a directory containing:\n";
-
 				for (auto&& x : directory_iterator(p))
 				{
 					std::string n = x.path().generic_string();
 					fnames.push_back(n);
-					//v.push_back(x.path());
 				}
+				return true;
 			}
 			else
-				cout << p << " exists, but is not a regular file or directory\n press any key to continue\n";
-			std::cin.get();
+				cout << p << " exists, but is not a regular file or directory\n";
+			return false;
 		}
 		else
-			cout << p << " does not exist\n press any key to continue\n";
-		std::cin.get();
+			cout << p << " does not exist\n";
+		return false;
 	}
 
 	catch (const filesystem_error& ex)
 	{
-		cout << ex.what() << "\n press any key to continue\n";
-		std::cin.get();
+		cout << ex.what() << "\n";
+		return false;
 	}
 }

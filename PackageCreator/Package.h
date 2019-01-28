@@ -13,87 +13,94 @@
 using namespace std::chrono;
 using std::cout;
 
+extern bool SPIN;
+extern bool GRIT_COUNT;
+extern bool MORE_INFO;
+extern bool FILL_HOLES;
+extern bool COLOUR_ID;
+extern bool LOAD_PACKAGE;
+
+/*****************************************************************************
+the following class initialises the package, 
+scales and spinnes the particles, adds them to the package 
+and documents the data
+*****************************************************************************/
 
 
 class Package
 {
 public:
 	//Constructor
-	//Package();
 	Package(std::string const&);
-
 	//Destructor
 	~Package();
 
-	//Manipulatoren
-	
-	void FillPackage(std::vector<Grit>&);
 	//this function fills the package with particles
-	std::map<double, uint32_t>::const_reverse_iterator GetScale();
-	//sucht die naechste Korngroese die einzufuegen ist heraus
-	bool IsNotFull();
-	//checkt ob der maximale feststoffanteil erreicht worden ist
-	void CreateFile();
-	//generiert Ausgabedatei im Verzeichnis der Partikelfiles
-	void Status(Grit const&);
-	//Prints the current status after adding particle/grit
-
+	void fill_package(std::vector<Grit>&);
+	//returns current basic scale and solid share border
+	std::map<double, uint32_t>::const_reverse_iterator get_scale();
+	//generates output file from calculated package
+	void create_file();
+	//prints the current status after adding particle/grit
+	void status(Grit const&);
 
 private:
-
+	//the data of this member will be saved in output file
 	std::vector<std::vector<std::vector<uint8_t>>> package;
-	//This is the 
+	//dimension of the created package
 	coordinate<int16_t> dim_pack;
-	//dimension der erstellten Packung
+	//path to source directory
 	std::string pack_path;
-	//Pfad zum Arbeitsordner
+	//total volume of package
 	uint32_t max_vol;
-	//gesamtes Volumen der Packung in Voxel
+	//number of solid voxels in package
 	uint32_t solid_vox;
-	//aktueller Feststoffanteil in Voxel
-
-	std::map<double, uint32_t> por_threshold;
 	//all scaling factors and corresponding solid share 
-	std::map<double, uint32_t>::const_reverse_iterator it_now; 
+	std::map<double, uint32_t> por_threshold;
 	//current scaling factor and corresponding solid share 
+	std::map<double, uint32_t>::const_reverse_iterator it_now;
+	//range for scale diversity in %
 	double scale_diversity;
-	//bereich in % indem dem scale schwankt
 
+	//counter for added particles
 	uint32_t count;
-	//zaehlt eingefuegte partikel
-	double max_solid; 
-	//maximaler Feststoffanteil in %
+	//maximum solid share %
+	double max_solid;
+	//counter for number of tries for each particle
 	uint32_t tried;
-	//Anzahl der Versuche um ein Korn einzufuegen
-	steady_clock::time_point run_t;
 	//runtime of the programm
-	const std::vector<coordinate<int16_t>> v_fill = { {0,0,0}, {1,1,1} ,{0,1,1},{0,0,1},{0,1,0},{1,0,0},{1,1,0},{1,0,1}  , { -1,-1,-1 }, { 0,-1,-1 }, { 0,0,-1 }, { 0,-1,0 }, { -1,0,0 }, { -1,-1,0 }, { -1,0,-1 }};
+	steady_clock::time_point run_t;
 	//Array for checking neighbouring voxels
-	int added_vox;
+	const std::vector<coordinate<int16_t>> v_fill = { {0,0,0}, {1,1,1} ,{0,1,1},{0,0,1},{0,1,0},{1,0,0},{1,1,0},{1,0,1}  , { -1,-1,-1 }, { 0,-1,-1 }, { 0,0,-1 }, { 0,-1,0 }, { -1,0,0 }, { -1,-1,0 }, { -1,0,-1 }};
 	//counts voxels added per particle
-	double real_scale;
+	int added_vox;
 	//the calculated real scale including scale diversity
-	std::vector<std::string> stat;
+	double real_scale;
 	//record of every particle added
-	std::vector<std::string> stat_general;
+	std::vector<std::string> stat;
 	//general statistic for every scaling factor
+	std::vector<std::string> stat_general;
+	//colour ID in final Package
 	uint8_t colour;
-	//coulor ID in final Package
-	unsigned int grit_choice;
+	//number of different particlemodels
 	unsigned int nr_of_grit;
+	//current particlemodel
+	unsigned int grit_choice;
+	
 
-	void CheckIfFree(Grit&, coordinate<int16_t> const&);
-	//checkt ob die position in der Packung schon belegt ist
-	void AddGrit(Grit&, const coordinate<int16_t> &);
-	//fügt nach erfolgreicher überprüfung ein Partikel in das gesamtpacket hinzu
-	inline void IsInFrame(coordinate<int16_t>&);
-	// koorrigiert coordinaten die ueber die Grenzen hinausgehen
+	//checks for existing particles were new particle should be inserted
+	void check_if_free(Grit&, coordinate<int16_t> const&);
+	//if all checks are valid this function inserts particle at given position and orientation
+	void add_grit(Grit&, const coordinate<int16_t> &);
+	//checks vector for periodicity
+	inline void is_in_frame(coordinate<int16_t>&);
+	//spins the vector and scales it
 	inline void spin_and_scale(coordinate<int16_t>&, const Grit&);
-	//spinnes the vector and scales it
-	inline coordinate<int16_t> dir_to_center(coordinate<int16_t>);
 	//creates a vektor pointing from point to center of gravity
-	inline void fill_holes(coordinate<int16_t>&, const int &);
+	inline coordinate<int16_t> dir_to_center(coordinate<int16_t>);
 	//if coordinates overlap this function checks neighbouring voxels for free spots
+	inline void fill_holes(coordinate<int16_t>&, const int &);
+	//creates line for statistic for each particle added to package
 	void get_stat(const std::ostringstream&, int&);
 };
 
