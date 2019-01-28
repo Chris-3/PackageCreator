@@ -13,7 +13,7 @@ extern bool COLOUR_ID;
 
 
 
-inline coordinate<int> Random_V_int(const coordinate<int> & n)
+inline coordinate<int16_t> Random_V_int(const coordinate<int16_t> & n)
 // generiert einen neuen Mittelpunkt fuer das Partikel in der Packung aus
 {
 	std::random_device rd;
@@ -22,10 +22,10 @@ inline coordinate<int> Random_V_int(const coordinate<int> & n)
 	std::uniform_int_distribution<> y(0, n.y - 1);
 	std::uniform_int_distribution<> z(0, n.z - 1);
 
-	return { x(rand),y(rand),z(rand) };
+	return { static_cast<int16_t>(x(rand)),static_cast<int16_t>(y(rand)),static_cast<int16_t>(z(rand)) };
 }
 
-inline coordinate<double> Random_V_double(const coordinate<int> & n)
+inline coordinate<double> Random_V_double(const coordinate<int16_t> & n)
 // generiert einen neuen Mittelpunkt fuer das Partikel in der Packung aus
 {
 	std::random_device rd;
@@ -126,7 +126,7 @@ Package::~Package()
 	CreateFile();
 }
 
-inline void Package::spin_and_scale(coordinate<int> &v, const Grit& p)
+inline void Package::spin_and_scale(coordinate<int16_t> &v, const Grit& p)
 {
 	coordinate<double> x = v * static_cast<double>(1);
 	if (SPIN)
@@ -136,17 +136,17 @@ inline void Package::spin_and_scale(coordinate<int> &v, const Grit& p)
 			+ (p.rot_v.cross_product(x))*sin(p.rot_alpha);
 	}
 	x = x * real_scale;
-	v = { static_cast<int>(x.x),static_cast<int>(x.y),static_cast<int>(x.z) };
+	v = { static_cast<int16_t>(x.x),static_cast<int16_t>(x.y),static_cast<int16_t>(x.z) };
 }
 
-inline void Package::fill_holes(coordinate<int>& n, const int &i)
+inline void Package::fill_holes(coordinate<int16_t>& n, const int &i)
 {
 	n = { n.x + dir_to_center(n).x * v_fill[i].x,
 	n.y + dir_to_center(n).y * v_fill[i].y,
 	n.z + dir_to_center(n).z * v_fill[i].z };
 }
 
-void Package::AddGrit(Grit& p_to_add, const coordinate<int> &v)
+void Package::AddGrit(Grit& p_to_add, const coordinate<int16_t> &v)
 {
 	added_vox = 0;
 	if (DEBUG) std::cout << "\n Patikel einfuegen\n";
@@ -176,7 +176,7 @@ void Package::AddGrit(Grit& p_to_add, const coordinate<int> &v)
 }
 
 
-void Package::CheckIfFree(Grit& p, const coordinate<int> & v)
+void Package::CheckIfFree(Grit& p, const coordinate<int16_t> & v)
 {
 	//if (package[p_to_check.center_p.x][p_to_check.center_p.y][p_to_check.center_p.z]) return false;
 	//if (DEBUG1) std::cout << " check Eckpunkte\n";
@@ -216,7 +216,7 @@ void Package::CheckIfFree(Grit& p, const coordinate<int> & v)
 void Package::FillPackage(std::vector<Grit>& particles)
 //this function fills the package with particles
 {
-	coordinate<int> v;
+	coordinate<int16_t> v;
 	nr_of_grit = particles.size() - 1;
 	
 	while (true)
@@ -384,7 +384,7 @@ void Package::Status(Grit const& p)
 
 }
 
-inline void Package::IsInFrame(coordinate<int> & i)
+inline void Package::IsInFrame(coordinate<int16_t> & i)
 //checks vector for periodicity
 {
 	if (i.x < 0)i.x = dim_pack.x + i.x;
@@ -397,10 +397,10 @@ inline void Package::IsInFrame(coordinate<int> & i)
 	if (i.z >= dim_pack.z)i.z = i.z - dim_pack.z;
 }
 
-inline coordinate<int> Package::dir_to_center(coordinate<int> v_temp)
+inline coordinate<int16_t> Package::dir_to_center(coordinate<int16_t> v_temp)
 {
 	if (abs(v_temp.x)) v_temp.x = v_temp.x / abs(v_temp.x);
 	if (abs(v_temp.y)) v_temp.y = v_temp.y / abs(v_temp.y);
 	if (abs(v_temp.z)) v_temp.z = v_temp.z / abs(v_temp.z);
-	return v_temp * -1;
+	return v_temp * static_cast<int16_t>(-1);
 }

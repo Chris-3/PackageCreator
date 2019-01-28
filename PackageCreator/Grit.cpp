@@ -24,9 +24,9 @@ Grit::Grit(std::string const& d) :grit_path(d)
 		{
 			if (voxl)
 			{
-				coordinate<int> x = { static_cast<int>(count / (dim_part.z*dim_part.y))
-					, static_cast<int>((count % (dim_part.z*dim_part.y)) / dim_part.z)
-					, static_cast<int>(count%dim_part.z) };//create vektor from file
+				coordinate<int16_t> x = { static_cast<int16_t>(count / (dim_part.z*dim_part.y))
+					, static_cast<int16_t>((count % (dim_part.z*dim_part.y)) / dim_part.z)
+					, static_cast<int16_t>(count%dim_part.z) };//create vektor from file
 				//if(DEBUG)x.print();
 				p_img.push_front(x);
 				volume++;
@@ -41,8 +41,8 @@ Grit::Grit(std::string const& d) :grit_path(d)
 	}
 	file.close();
 
-	CenterOfGravity();
-	GetId(grit_path);//extracts model number
+	center_of_gravity();
+	get_id(grit_path);//extracts model number
 	frame_points.resize(6, center_p);
 	frame_points_new.resize(6, center_p);
 	if (DEBUG)
@@ -51,7 +51,7 @@ Grit::Grit(std::string const& d) :grit_path(d)
 		std::cout << "\n frame:";
 	}
 
-	ConvertCoordinates();//converts source point to center of gravity for every vector
+	convert_coordinates();//converts source point to center of gravity for every vector
 	std::cout << " Partcle ID: " << id << "\t Volume: " << volume<<"\n";
 
 }
@@ -59,12 +59,7 @@ Grit::Grit(std::string const& d) :grit_path(d)
 Grit::~Grit() {}
 
 
-inline int Grit::GetVolume() const
-{
-	return volume;
-}
-
-void Grit::IsFrame(const coordinate<int> & i)
+void Grit::is_frame(const coordinate<int16_t> & i)
 {
 	if (frame_points[0].x < i.x)frame_points[0] = i;
 	if (frame_points[1].x > i.x)frame_points[1] = i;
@@ -75,7 +70,7 @@ void Grit::IsFrame(const coordinate<int> & i)
 }
 
 
-void Grit::CenterOfGravity()
+void Grit::center_of_gravity()
 {
 	center_p = { 0,0,0 };
 	for (auto const& n : p_img)
@@ -87,11 +82,11 @@ void Grit::CenterOfGravity()
 	center_p.z = center_p.z / volume;
 }
 
-void Grit::ConvertCoordinates()
+void Grit::convert_coordinates()
 {
 	for (auto& n : p_img)
 	{
-		IsFrame(n);
+		is_frame(n);
 		n = n - center_p;
 	}
 	for (auto& n : frame_points)
@@ -101,7 +96,7 @@ void Grit::ConvertCoordinates()
 	}
 }
 
-void Grit::GetId(std::string const & d)
+void Grit::get_id(std::string const & d)
 {
 	for (auto i = (d.find("Particle_") + 9); d[i] != '_'; i++)
 	{

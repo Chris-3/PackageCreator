@@ -43,7 +43,7 @@ private:
 
 	std::vector<std::vector<std::vector<uint8_t>>> package;
 	//This is the 
-	coordinate<int> dim_pack;
+	coordinate<int16_t> dim_pack;
 	//dimension der erstellten Packung
 	std::string pack_path;
 	//Pfad zum Arbeitsordner
@@ -67,7 +67,7 @@ private:
 	//Anzahl der Versuche um ein Korn einzufuegen
 	steady_clock::time_point run_t;
 	//runtime of the programm
-	const std::vector<coordinate<int>> v_fill = { {0,0,0}, {1,1,1} ,{0,1,1},{0,0,1},{0,1,0},{1,0,0},{1,1,0},{1,0,1}  , { -1,-1,-1 }, { 0,-1,-1 }, { 0,0,-1 }, { 0,-1,0 }, { -1,0,0 }, { -1,-1,0 }, { -1,0,-1 }};
+	const std::vector<coordinate<int16_t>> v_fill = { {0,0,0}, {1,1,1} ,{0,1,1},{0,0,1},{0,1,0},{1,0,0},{1,1,0},{1,0,1}  , { -1,-1,-1 }, { 0,-1,-1 }, { 0,0,-1 }, { 0,-1,0 }, { -1,0,0 }, { -1,-1,0 }, { -1,0,-1 }};
 	//Array for checking neighbouring voxels
 	int added_vox;
 	//counts voxels added per particle
@@ -82,17 +82,17 @@ private:
 	unsigned int grit_choice;
 	unsigned int nr_of_grit;
 
-	void CheckIfFree(Grit&, coordinate<int> const&);
+	void CheckIfFree(Grit&, coordinate<int16_t> const&);
 	//checkt ob die position in der Packung schon belegt ist
-	void AddGrit(Grit&, const coordinate<int> &);
+	void AddGrit(Grit&, const coordinate<int16_t> &);
 	//fügt nach erfolgreicher überprüfung ein Partikel in das gesamtpacket hinzu
-	inline void IsInFrame(coordinate<int>&);
+	inline void IsInFrame(coordinate<int16_t>&);
 	// koorrigiert coordinaten die ueber die Grenzen hinausgehen
-	inline void spin_and_scale(coordinate<int>&, const Grit&);
+	inline void spin_and_scale(coordinate<int16_t>&, const Grit&);
 	//spinnes the vector and scales it
-	inline coordinate<int> dir_to_center(coordinate<int>);
+	inline coordinate<int16_t> dir_to_center(coordinate<int16_t>);
 	//creates a vektor pointing from point to center of gravity
-	inline void fill_holes(coordinate<int>&, const int &);
+	inline void fill_holes(coordinate<int16_t>&, const int &);
 	//if coordinates overlap this function checks neighbouring voxels for free spots
 	void get_stat(const std::ostringstream&, int&);
 };

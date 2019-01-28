@@ -6,19 +6,8 @@ using std::string;
 using namespace boost::filesystem;
 double default_perc[] = { 16.0, 23.0, 35.0, 4.7, 0.2, 0.1 };
 
-//funktion wird voraussichtlich nicht mehr gebraucht könnte sich aber noch als nützlich erweisen
-//template<typename T>
-//bool contains(std::list<T> & listOfElements, const T & element)
-//{
-//	// Find the iterator if element in list
-//	auto it = std::find(listOfElements.begin(), listOfElements.end(), element);
-//	//return if iterator points to end or not. It points to end then it means element
-//	// does not exists in list
-//	return it != listOfElements.end();
-//}
-
-void getFileNames(path p, std::vector<std::string> &fnames)
-//generiert eine List von Path Objekten in denen die Informationen der Files (Name,Pfad,etc) zu den Partikeln gespeichert ist
+void get_filenames(path p, std::vector<std::string> &fnames)
+//this function searches targed directory and saves all filenames in fnames 
 {
 	//std::vector<path> v;
 	try
@@ -44,30 +33,17 @@ void getFileNames(path p, std::vector<std::string> &fnames)
 				}
 			}
 			else
-				cout << p << " exists, but is not a regular file or directory\n";
+				cout << p << " exists, but is not a regular file or directory\n press any key to continue\n";
+			std::cin.get();
 		}
 		else
-			cout << p << " does not exist\n";
+			cout << p << " does not exist\n press any key to continue\n";
+		std::cin.get();
 	}
 
 	catch (const filesystem_error& ex)
 	{
-		cout << ex.what() << '\n';
+		cout << ex.what() << "\n press any key to continue\n";
+		std::cin.get();
 	}
 }
-
-//
-//std::map<string, double> getScalingFactor(const std::vector<string> & fnames, double *percent =default_perc)
-//{
-//	std::map<string, double> my_map;
-//
-//	int j = 0;
-//	for (unsigned int i = fnames.size()-1; i > 0 ; i--)
-//	{
-//		if (!my_map.count(fnames[i].substr(fnames[i].size() - 7, 3)))
-//		{
-//			my_map.insert(std::pair<string, double>(fnames[i].substr(fnames[i].size() - 7, 3), percent[j++]));
-//		}
-//	}
-//	return my_map;
-//}
