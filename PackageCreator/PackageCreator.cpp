@@ -30,7 +30,7 @@ void get_default_settings(int , char** , std::vector<std::string>&);
 
 int main(int argc, char* argv[])
 {
-	cout << "\n*********PackageCreator*********\n";
+	cout << "\n*********PackageCreator v3.0*********\n";
 	std::vector<std::string> fnames;
 	//in dieser Liste (fnames) wird der komplette Pfad aller Dateien des Zielverzeichnisses gespeichert
 	if (argc < 2 && VISUAL_STUD) getFileNames("D:/Programmieren/Masterarbeit_andrea/Partikel", fnames);
