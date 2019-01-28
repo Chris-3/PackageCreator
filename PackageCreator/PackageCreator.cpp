@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 	//in dieser Liste (fnames) wird der komplette Pfad aller Dateien des Zielverzeichnisses gespeichert
 	if (argc < 2 && VISUAL_STUD) getFileNames("D:/Programmieren/Masterarbeit_andrea/Partikel", fnames);
 	if (argc < 2 && !VISUAL_STUD) getFileNames("-", fnames);//Default Modus
-	else get_default_settings(argc, argv, fnames);//Called if programm gets parameters
+	get_default_settings(argc, argv, fnames);//Called if programm gets parameters
 	
 
 	for (auto const & param : fnames)

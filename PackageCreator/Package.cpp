@@ -216,23 +216,27 @@ void Package::FillPackage(std::vector<Grit>& particles)
 //this function fills the package with particles
 {
 	coordinate<int> v;
-	int grit_nr, last_grit_nr = 0;
+	int grit_nr;
+	static int last_grit_nr = 0;
+	while (true)
+	{
+		grit_nr = Random_No(particles.size() - 1);
+		if (grit_nr == last_grit_nr) continue;
+		last_grit_nr = grit_nr;
+		break;
+	}
 
 	while (true)
 	{
-
 		if (it_now->second <= solid_vox && !GRIT_COUNT) ++it_now;
 		if (it_now->second <= count && GRIT_COUNT) ++it_now;
 		if (it_now == por_threshold.rend())return;
 		tried++;
 		v = Random_V_int(dim_pack);
 		if (package[v.x][v.y][v.z])continue;
-		grit_nr = Random_No(particles.size() - 1);
-		//cout << grit_nr << " ";
-		if (grit_nr == last_grit_nr) continue;// && particles.size() > 1)continue;
+		
 		CheckIfFree(particles[grit_nr], v);
-		//cout << "\n";
-		last_grit_nr = grit_nr;
+		
 	}
 }
 
