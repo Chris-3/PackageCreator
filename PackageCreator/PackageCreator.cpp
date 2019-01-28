@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	std::cout << "No file with name \"Parameter\" found\n";
-
+	std::cin.get();
 	return 0;
 }
 
