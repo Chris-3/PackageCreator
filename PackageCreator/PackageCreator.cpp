@@ -6,7 +6,7 @@
 
 #define DEBUG 0
 #define DEBUG1 0
-#define VISUAL_STUD 0
+#define VISUAL_STUD 1
 
 #include "get_filenames.h"
 #include "Grit.h"

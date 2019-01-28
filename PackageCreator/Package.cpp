@@ -38,7 +38,7 @@ inline coordinate<double> Random_V_double(const coordinate<int> & n)
 }
 
 inline int Random_No(const unsigned int &n)
-// generiert Random Int
+// generates random Int
 {
 	std::random_device rd;
 	pcg rand(rd);
@@ -47,7 +47,7 @@ inline int Random_No(const unsigned int &n)
 }
 
 inline double Random_No(const double& n)
-// generiert Random double
+// generates random double
 {
 	std::random_device rd;
 	pcg rand(rd);
@@ -66,7 +66,7 @@ Package::Package(std::string const& d) :pack_path(d)
 	uint32_t temp = 0;
 	tried = 0;
 	colour = 1;
-
+	grit_choice = 0; 
 	//here Parameters are read from Parameter file
 	if (file.is_open())
 	{
@@ -172,6 +172,7 @@ void Package::AddGrit(Grit& p_to_add, const coordinate<int> &v)
 	count++;
 	Status(p_to_add);
 	tried = 0;
+	grit_choice = Random_No(nr_of_grit);
 }
 
 
@@ -216,16 +217,8 @@ void Package::FillPackage(std::vector<Grit>& particles)
 //this function fills the package with particles
 {
 	coordinate<int> v;
-	int grit_nr;
-	static int last_grit_nr = 0;
-	while (true)
-	{
-		grit_nr = Random_No(particles.size() - 1);
-		if (grit_nr == last_grit_nr) continue;
-		last_grit_nr = grit_nr;
-		break;
-	}
-
+	nr_of_grit = particles.size() - 1;
+	
 	while (true)
 	{
 		if (it_now->second <= solid_vox && !GRIT_COUNT) ++it_now;
@@ -235,8 +228,7 @@ void Package::FillPackage(std::vector<Grit>& particles)
 		v = Random_V_int(dim_pack);
 		if (package[v.x][v.y][v.z])continue;
 		
-		CheckIfFree(particles[grit_nr], v);
-		
+		CheckIfFree(particles[grit_choice], v);
 	}
 }
 

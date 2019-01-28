@@ -78,6 +78,9 @@ private:
 	std::vector<std::string> stat_general;
 	//general statistic for every scaling factor
 	uint8_t colour;
+	//coulor ID in final Package
+	unsigned int grit_choice;
+	unsigned int nr_of_grit;
 
 	void CheckIfFree(Grit&, coordinate<int> const&);
 	//checkt ob die position in der Packung schon belegt ist
