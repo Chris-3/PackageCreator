@@ -113,7 +113,7 @@ public:
 	~Grit();
 	
 	
-	void is_frame(const coordinate<int16_t> &);
+	void is_frame(const coordinate<int> &);
 	//checks if current particle is one of the outer most
 	void center_of_gravity();
 	//calculates center of gravity
@@ -124,15 +124,15 @@ public:
 
 private:
 	
-	std::forward_list<coordinate<int16_t>> p_img;
+	std::forward_list<coordinate<int>> p_img;
 	//saves a vector to every solid voxel found in the original file
-	coordinate<int16_t> center_p;
+	coordinate<int> center_p;
 	//vector to calculated center of gravity from absolut starting point
-	coordinate<int16_t> dim_part;
+	coordinate<int> dim_part;
 	//dimension of the file the particle is loaded from
-	std::vector<coordinate<int16_t>> frame_points;
+	std::vector<coordinate<int>> frame_points;
 	//outer limits of the particle (original file)
-	std::vector<coordinate<int16_t>> frame_points_new;
+	std::vector<coordinate<int>> frame_points_new;
 	//outer limits of the particle (spinned and scaled)
 	uint32_t volume_or;
 	//original Volume of particle
@@ -146,7 +146,7 @@ private:
 	//parameter for rotation matrix (unit vector)
 	double rot_alpha;
 	//parameter for rotation matrix (alpha)
-	coordinate<int16_t> v_trans;
+	coordinate<int> v_trans;
 	//new center of gravity in package
 
 	void get_id(std::string const&);

@@ -4,8 +4,8 @@
 #define DEBUG 0
 #define DEBUG1 0
 
-//this function generates a random int16_t 3D vector
-inline coordinate<int16_t> Random_V_int(const coordinate<int16_t> & n)
+//this function generates a random int 3D vector
+inline coordinate<int> Random_V_int(const coordinate<int> & n)
 {
 	std::random_device rd;
 	pcg rand(rd);
@@ -13,11 +13,11 @@ inline coordinate<int16_t> Random_V_int(const coordinate<int16_t> & n)
 	std::uniform_int_distribution<> y(0, n.y - 1);
 	std::uniform_int_distribution<> z(0, n.z - 1);
 
-	return { static_cast<int16_t>(x(rand)),static_cast<int16_t>(y(rand)),static_cast<int16_t>(z(rand)) };
+	return { static_cast<int>(x(rand)),static_cast<int>(y(rand)),static_cast<int>(z(rand)) };
 }
 
 //this function generates a random double 3D vector
-inline coordinate<double> Random_V_double(const coordinate<int16_t> & n)
+inline coordinate<double> Random_V_double(const coordinate<int> & n)
 {
 	std::random_device rd;
 	pcg rand(rd);
@@ -111,7 +111,7 @@ Package::~Package()
 }
 
 //spins the vector and scales it
-inline void Package::spin_and_scale(coordinate<int16_t> &v, const Grit& p)
+inline void Package::spin_and_scale(coordinate<int> &v, const Grit& p)
 {
 	coordinate<double> x = v * static_cast<double>(1);
 	if (SPIN)
@@ -121,11 +121,11 @@ inline void Package::spin_and_scale(coordinate<int16_t> &v, const Grit& p)
 			+ (p.rot_v.cross_product(x))*sin(p.rot_alpha);
 	}
 	x = x * real_scale;
-	v = { static_cast<int16_t>(x.x),static_cast<int16_t>(x.y),static_cast<int16_t>(x.z) };
+	v = { static_cast<int>(x.x),static_cast<int>(x.y),static_cast<int>(x.z) };
 }
 
 //creates line for statistic for each particle added to package
-inline void Package::fill_holes(coordinate<int16_t>& n, const int &i)
+inline void Package::fill_holes(coordinate<int>& n, const int &i)
 {
 	n = { n.x + dir_to_center(n).x * v_fill[i].x,
 	n.y + dir_to_center(n).y * v_fill[i].y,
@@ -133,7 +133,7 @@ inline void Package::fill_holes(coordinate<int16_t>& n, const int &i)
 }
 
 //if all checks are valid this function inserts particle at given position and orientation
-void Package::add_grit(Grit& p_to_add, const coordinate<int16_t> &v)
+void Package::add_grit(Grit& p_to_add, const coordinate<int> &v)
 {
 	added_vox = 0;
 	if (DEBUG) std::cout << "\n Patikel einfuegen\n";
@@ -164,7 +164,7 @@ void Package::add_grit(Grit& p_to_add, const coordinate<int16_t> &v)
 
 
 //checks for existing particles were new particle should be inserted
-void Package::check_if_free(Grit& p, const coordinate<int16_t> & v)
+void Package::check_if_free(Grit& p, const coordinate<int> & v)
 {
 	
 	p.get_rot_param(Random_V_double(dim_pack).normalized(), Random_No(M_PI * 2));
@@ -188,6 +188,7 @@ void Package::check_if_free(Grit& p, const coordinate<int16_t> & v)
 		spin_and_scale(n, p);
 		n = n + v;
 		is_in_frame(n);
+
 		if (package[n.x][n.y][n.z])return;
 	}
 	add_grit(p, v);
@@ -198,7 +199,7 @@ void Package::check_if_free(Grit& p, const coordinate<int16_t> & v)
 //this function fills the package with particles
 void Package::fill_package(std::vector<Grit>& particles)
 {
-	coordinate<int16_t> v;
+	coordinate<int> v;
 	nr_of_grit = particles.size() - 1;
 
 	while (true)
@@ -207,6 +208,8 @@ void Package::fill_package(std::vector<Grit>& particles)
 		if (it_now->second <= count && GRIT_COUNT) ++it_now;
 		if (it_now == por_threshold.rend())return;
 		tried++;
+		if (!(tried % 100000))cout << "|";
+		if (!(tried % 1000000))cout << "X";
 		v = Random_V_int(dim_pack);
 		if (package[v.x][v.y][v.z])continue;
 
@@ -307,7 +310,7 @@ void Package::get_stat(const std::ostringstream& time, int& count_p_scale)
 	stat_general.push_back(oss2.str());
 	count_p_scale = 0;
 	if (COLOUR_ID)colour++;
-	if (colour < 16)colour = 1;
+	if (colour > 16)colour = 1;
 }
 
 //prints the current status after adding particle/grit
@@ -365,7 +368,7 @@ void Package::status(Grit const& p)
 }
 
 //checks vector for periodicity
-inline void Package::is_in_frame(coordinate<int16_t> & i)
+inline void Package::is_in_frame(coordinate<int> & i)
 {
 	if (i.x < 0)i.x = dim_pack.x + i.x;
 	if (i.x >= dim_pack.x)i.x = i.x - dim_pack.x;
@@ -378,10 +381,10 @@ inline void Package::is_in_frame(coordinate<int16_t> & i)
 }
 
 //creates a vektor pointing from point to center of gravity
-inline coordinate<int16_t> Package::dir_to_center(coordinate<int16_t> v_temp)
+inline coordinate<int> Package::dir_to_center(coordinate<int> v_temp)
 {
 	if (abs(v_temp.x)) v_temp.x = v_temp.x / abs(v_temp.x);
 	if (abs(v_temp.y)) v_temp.y = v_temp.y / abs(v_temp.y);
 	if (abs(v_temp.z)) v_temp.z = v_temp.z / abs(v_temp.z);
-	return v_temp * static_cast<int16_t>(-1);
+	return v_temp * static_cast<int>(-1);
 }

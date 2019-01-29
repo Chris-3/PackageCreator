@@ -24,9 +24,9 @@ Grit::Grit(std::string const& d) :grit_path(d)
 			if (voxl)
 			{
 				//create vektor from file
-				coordinate<int16_t> x = { static_cast<int16_t>(count / (dim_part.z*dim_part.y))
-					, static_cast<int16_t>((count % (dim_part.z*dim_part.y)) / dim_part.z)
-					, static_cast<int16_t>(count%dim_part.z) };
+				coordinate<int> x = { static_cast<int>(count / (dim_part.z*dim_part.y))
+					, static_cast<int>((count % (dim_part.z*dim_part.y)) / dim_part.z)
+					, static_cast<int>(count%dim_part.z) };
 				p_img.push_front(x);
 				volume++;
 				hasbeenGrit = true;
@@ -58,7 +58,7 @@ Grit::Grit(std::string const& d) :grit_path(d)
 Grit::~Grit() {}
 
 
-void Grit::is_frame(const coordinate<int16_t> & i)
+void Grit::is_frame(const coordinate<int> & i)
 {
 	if (frame_points[0].x < i.x)frame_points[0] = i;
 	if (frame_points[1].x > i.x)frame_points[1] = i;

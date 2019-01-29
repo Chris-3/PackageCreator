@@ -48,7 +48,7 @@ private:
 	//the data of this member will be saved in output file
 	std::vector<std::vector<std::vector<uint8_t>>> package;
 	//dimension of the created package
-	coordinate<int16_t> dim_pack;
+	coordinate<int> dim_pack;
 	//path to source directory
 	std::string pack_path;
 	//total volume of package
@@ -71,7 +71,7 @@ private:
 	//runtime of the programm
 	steady_clock::time_point run_t;
 	//Array for checking neighbouring voxels
-	const std::vector<coordinate<int16_t>> v_fill = { {0,0,0}, {1,1,1} ,{0,1,1},{0,0,1},{0,1,0},{1,0,0},{1,1,0},{1,0,1}  , { -1,-1,-1 }, { 0,-1,-1 }, { 0,0,-1 }, { 0,-1,0 }, { -1,0,0 }, { -1,-1,0 }, { -1,0,-1 }};
+	const std::vector<coordinate<int>> v_fill = { {0,0,0}, {1,1,1} ,{0,1,1},{0,0,1},{0,1,0},{1,0,0},{1,1,0},{1,0,1}  , { -1,-1,-1 }, { 0,-1,-1 }, { 0,0,-1 }, { 0,-1,0 }, { -1,0,0 }, { -1,-1,0 }, { -1,0,-1 }};
 	//counts voxels added per particle
 	int added_vox;
 	//the calculated real scale including scale diversity
@@ -89,17 +89,17 @@ private:
 	
 
 	//checks for existing particles were new particle should be inserted
-	void check_if_free(Grit&, coordinate<int16_t> const&);
+	void check_if_free(Grit&, coordinate<int> const&);
 	//if all checks are valid this function inserts particle at given position and orientation
-	void add_grit(Grit&, const coordinate<int16_t> &);
+	void add_grit(Grit&, const coordinate<int> &);
 	//checks vector for periodicity
-	inline void is_in_frame(coordinate<int16_t>&);
+	inline void is_in_frame(coordinate<int>&);
 	//spins the vector and scales it
-	inline void spin_and_scale(coordinate<int16_t>&, const Grit&);
+	inline void spin_and_scale(coordinate<int>&, const Grit&);
 	//creates a vektor pointing from point to center of gravity
-	inline coordinate<int16_t> dir_to_center(coordinate<int16_t>);
+	inline coordinate<int> dir_to_center(coordinate<int>);
 	//if coordinates overlap this function checks neighbouring voxels for free spots
-	inline void fill_holes(coordinate<int16_t>&, const int &);
+	inline void fill_holes(coordinate<int>&, const int &);
 	//creates line for statistic for each particle added to package
 	void get_stat(const std::ostringstream&, int&);
 };
