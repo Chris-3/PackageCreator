@@ -1,8 +1,11 @@
 #include "Package.h"
 #include "random.h"
+#include "options.h"
 
 #define DEBUG 0
 #define DEBUG1 0
+
+extern options opt;
 
 //this function generates a random int 3D vector
 inline coordinate<int> Random_V_int(const coordinate<int> & n)
@@ -333,7 +336,7 @@ void Package::status(Grit const& p)
 		<< "\n Particle count: " << count
 		<< "\n Solid voxel: " << solid_vox
 		<< "\n Empty voxel: " << max_vol - solid_vox
-		<< "\n Paticle ID: " << p.id << "\t Real scale: " << real_scale * 100 << "% = " << por_threshold.rbegin()->first*real_scale << "mm \t Volume: " << added_vox
+		<< "\n Modelnumber: " << p.id << "\t Real scale: " << real_scale * 100 << "% = " << por_threshold.rbegin()->first*real_scale << "mm \t Volume: " << added_vox
 		<< "\n Nr. of tries: " << tried
 		<< "\n Basic scale (" << it_now->first << ") up to " << static_cast<double>(it_now->second) / static_cast<double>(max_vol) * 100 << "%  => " << it_now->second << " Voxel"
 		<< "\n Current runtime: " << time.str()

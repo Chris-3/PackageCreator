@@ -4,9 +4,9 @@
 #include <algorithm>
 
 
-#define DEBUG 0
-#define DEBUG1 0
-#define VISUAL_STUD 0
+#include "get_filenames.h"
+#include "Grit.h"
+#include "Package.h"
 
 bool SPIN = true;
 bool GRIT_COUNT = false;
@@ -16,21 +16,13 @@ bool COLOUR_ID = true;
 bool LOAD_PACKAGE = false;
 bool CURRENT_DIR = true;
 
-#include "get_filenames.h"
-#include "Grit.h"
-#include "Package.h"
-
-bool getGritsofScale(std::vector<Grit> &, const std::vector<std::string> &, const double&);
 // this function searches for every file named "Particle_" and creates a Grit object for each
-void get_default_settings(int, char**, std::vector<std::string>&);
-//this function prints a menu to get the new default settings 
-
+bool getGritsofScale(std::vector<Grit> &, const std::vector<std::string> &, const double&);
 
 int main(int argc, char* argv[])
 {
 	cout << "\n*********PackageCreator*********\n";
-	std::vector<std::string> fnames;
-	//here are all filenames in target directory saved
+	std::vector<std::string> fnames;	//here are all filenames in target directory saved
 	
 	get_default_settings(argc, argv, fnames);
 
@@ -77,53 +69,3 @@ bool getGritsofScale(std::vector<Grit> &x, std::vector<std::string> const& fname
 	return no_file;
 }
 
-void get_default_settings(int argc, char ** argv, std::vector<std::string>& fnames)
-{
-	char choice = ' ';
-	std::string dir;
-	for (;;)
-	{
-		cout << "\n 0 Start programm "
-			<< "\n 1 Spinning  of particles: " << (SPIN ? "on" : "off")
-			<< "\n 2 Count particles: " << (GRIT_COUNT ? "on" : "off")
-			<< "\n 3 Get more info in statistic file: " << (MORE_INFO ? "on" : "off")
-			<< "\n 4 Assign every basic scale a diffent ID: " << (COLOUR_ID ? "on" : "off")
-			<< "\n 5 Load existing Package: " << (LOAD_PACKAGE ? "on" : "off")
-			<< "\n 6 Change working directory: " << (CURRENT_DIR ? "off" : "on")
-			//<< "\n 7 Fill holes when overlapping voxels occur: " << (FILL_HOLES ? "on" : "off")
-			<< "\n\n To alter default settings press corresponing number, enter 0 to start programm: "
-			;
-
-		std::cin >> choice;
-
-		switch (choice)
-		{
-		case '1':
-			SPIN = !SPIN;
-			continue;
-		case '2':
-			GRIT_COUNT = !GRIT_COUNT;
-			continue;
-		case '3':
-			MORE_INFO = !MORE_INFO;
-			continue;
-		case '4':
-			COLOUR_ID = !COLOUR_ID;
-			continue;
-		case '5':
-			LOAD_PACKAGE = !LOAD_PACKAGE;
-			cout << "\n sorry doesn't work jet \n";
-			continue;
-		case '6':
-			CURRENT_DIR = !CURRENT_DIR;
-			continue;
-		case '7':
-			FILL_HOLES = !FILL_HOLES;
-			continue;
-		default:
-			while (!get_filenames(fnames));
-			
-			return;
-		}
-	}
-}
