@@ -1,11 +1,9 @@
 #include "Package.h"
 #include "random.h"
-#include "options.h"
 
 #define DEBUG 0
 #define DEBUG1 0
 
-extern options opt;
 
 //this function generates a random int 3D vector
 inline coordinate<int> Random_V_int(const coordinate<int> & n)

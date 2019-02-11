@@ -1,4 +1,5 @@
-#pragma once
+#ifndef OPTION_H
+#define OPTION_H
 class options
 {
 public:
@@ -30,3 +31,5 @@ options::options()
 options::~options()
 {
 }
+
+#endif

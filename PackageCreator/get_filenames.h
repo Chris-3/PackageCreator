@@ -5,6 +5,7 @@ using std::cout;
 using std::string;
 using namespace boost::filesystem;
 
+extern options OPT;
 
 extern bool SPIN;
 extern bool GRIT_COUNT;
@@ -62,6 +63,7 @@ bool get_filenames(std::vector<std::string> &fnames)
 //this function prints a menu to get the new default settings 
 void get_default_settings(int argc, char ** argv, std::vector<std::string>& fnames)
 {
+	OPT.COLOUR_ID = false;
 	char choice = ' ';
 	std::string dir;
 	for (;;)
@@ -74,7 +76,7 @@ void get_default_settings(int argc, char ** argv, std::vector<std::string>& fnam
 			<< "\n 5 Load existing Package: " << (LOAD_PACKAGE ? "on" : "off")
 			<< "\n 6 Change working directory: " << (CURRENT_DIR ? "off" : "on")
 			//<< "\n 7 Fill holes when overlapping voxels occur: " << (FILL_HOLES ? "on" : "off")
-			<< "\n\n To alter default settings press corresponing number, enter 0 to start programm: "
+			<< "\n\n To alter default settings press corresponding number, enter 0 to start program: "
 			;
 
 		std::cin >> choice;

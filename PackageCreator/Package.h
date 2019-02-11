@@ -10,11 +10,12 @@
 #include <chrono>
 
 #include "Grit.h"
-
+//
 
 using namespace std::chrono;
 using std::cout;
 
+//extern options OPT;
 
 extern bool SPIN;
 extern bool GRIT_COUNT;
