@@ -3,14 +3,13 @@
 #include <map>
 #include <algorithm>
 
-#include "options.h"
 
 #include "get_filenames.h"
 
 #include "Grit.h"
 #include "Package.h"
 
-options OPT;
+//options OPT;
 
 bool SPIN = true;
 bool GRIT_COUNT = false;
@@ -19,7 +18,7 @@ bool FILL_HOLES = false;
 bool COLOUR_ID = true;
 bool LOAD_PACKAGE = false;
 bool CURRENT_DIR = true;
-
+                                                                                                              
 
 
 // this function searches for every file named "Particle_" and creates a Grit object for each
@@ -42,7 +41,7 @@ int main(int argc, char* argv[])
 
 			if (!getGritsofScale(x, fnames, pack.get_scale()->first))
 			{
-				std::cout << "No file with name \"Particle_\" found\n press any key to continue\n";
+				std::cout << " No file with name \"Particle_\" found\n press any key to continue\n";
 				std::cin.get();
 				return 0;
 			}

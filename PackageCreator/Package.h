@@ -10,7 +10,7 @@
 #include <chrono>
 
 #include "Grit.h"
-//
+
 
 using namespace std::chrono;
 using std::cout;
@@ -29,7 +29,6 @@ the following class initialises the package,
 scales and spinnes the particles, adds them to the package 
 and documents the data
 *****************************************************************************/
-
 
 class Package
 {

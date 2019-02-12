@@ -5,7 +5,7 @@ using std::cout;
 using std::string;
 using namespace boost::filesystem;
 
-extern options OPT;
+//extern options OPT;
 
 extern bool SPIN;
 extern bool GRIT_COUNT;
@@ -63,7 +63,7 @@ bool get_filenames(std::vector<std::string> &fnames)
 //this function prints a menu to get the new default settings 
 void get_default_settings(int argc, char ** argv, std::vector<std::string>& fnames)
 {
-	OPT.COLOUR_ID = false;
+	//OPT.COLOUR_ID = false;
 	char choice = ' ';
 	std::string dir;
 	for (;;)
@@ -102,9 +102,9 @@ void get_default_settings(int argc, char ** argv, std::vector<std::string>& fnam
 		case '6':
 			CURRENT_DIR = !CURRENT_DIR;
 			continue;
-		case '7':
+		/*case '7':
 			FILL_HOLES = !FILL_HOLES;
-			continue;
+			continue;*/
 		default:
 			while (!get_filenames(fnames));
 
