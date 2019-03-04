@@ -3,22 +3,22 @@
 #include <map>
 #include <algorithm>
 
+enum opt_flags
+{
+	SPIN = 1 << 0,
+	GRIT_COUNT = 1 << 1,
+	MORE_INFO = 1 << 2,
+	FILL_HOLES = 1 << 3,
+	COLOUR_ID = 1 << 4,
+	LOAD_PACKAGE = 1 << 5,
+	CURRENT_DIR = 1 << 6
+};
+
 
 #include "get_filenames.h"
-
 #include "Grit.h"
 #include "Package.h"
 
-//options OPT;
-
-bool SPIN = true;
-bool GRIT_COUNT = false;
-bool MORE_INFO = false;
-bool FILL_HOLES = false;
-bool COLOUR_ID = true;
-bool LOAD_PACKAGE = false;
-bool CURRENT_DIR = true;
-                                                                                                              
 
 
 // this function searches for every file named "Particle_" and creates a Grit object for each
@@ -26,16 +26,18 @@ bool getGritsofScale(std::vector<Grit> &, const std::vector<std::string> &, cons
 
 int main(int argc, char* argv[])
 {
+	int16_t options = SPIN + COLOUR_ID + CURRENT_DIR;
+
 	cout << "\n*********PackageCreator*********\n";
 	std::vector<std::string> fnames;	//here are all filenames in target directory saved
-	
-	get_default_settings(argc, argv, fnames);
+
+	get_default_settings(fnames, options);
 
 	for (auto const & param : fnames)
 	{
 		if (param.find("Parameter") != std::string::npos)
 		{
-			Package pack(param);//class Package is initialised with parameter file
+			Package pack(param,options);//class Package is initialised with parameter file
 
 			std::vector<Grit> x;//this will be the list of the original particles
 

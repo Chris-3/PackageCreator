@@ -4,6 +4,17 @@
 #define DEBUG 0
 #define DEBUG1 0
 
+enum opt_flags
+{
+	SPIN = 1 << 0,
+	GRIT_COUNT = 1 << 1,
+	MORE_INFO = 1 << 2,
+	FILL_HOLES = 1 << 3,
+	COLOUR_ID = 1 << 4,
+	LOAD_PACKAGE = 1 << 5,
+	CURRENT_DIR = 1 << 6
+};
+
 
 //this function generates a random int 3D vector
 inline coordinate<int> Random_V_int(const coordinate<int> & n)
@@ -47,24 +58,47 @@ inline double Random_No(const double& n)
 	return p(rand);
 }
 
-Package::Package(std::string const& d) :pack_path(d)
+Package::Package(const std::string & d, const int16_t & opt) :pack_path(d), options(opt)
 {
 	run_t = steady_clock::now();
 	std::fstream file(pack_path, std::ios_base::in);
 	double scale = 0.0, solid_share = 0.0;
 	uint32_t temp = 0;
+	std::string line;
+	std::istringstream iss;
 	tried = 0;
 	colour = 1;
 	grit_choice = 0;
 	//here Parameters are read from Parameter file
 	if (file.is_open())
 	{
-		file >> dim_pack.x >> dim_pack.y >> dim_pack.z >> max_solid >> scale_diversity;
+		std::getline(file, line);
+		cout << line << "\n";
+		std::getline(file, line);
+		cout << line << "\n";
+		iss.str(line);
+		iss >> dim_pack.x >> dim_pack.y >> dim_pack.z;
+		cout << dim_pack << "\n";
+		std::getline(file, line);
+		cout << line << "\n";
+		std::getline(file, line);
+		iss.clear();
+		iss.str(line);
+		iss >> max_solid >> scale_diversity;
 		max_vol = dim_pack.x*dim_pack.y*dim_pack.z;
-		while (file >> scale >> solid_share)
+		cout << line << " " << max_solid << " " << scale_diversity << "\n";
+		std::getline(file, line);
+		cout << line << "\n" << "\n";
+
+		//while (file >> scale >> solid_share)
+		while (std::getline(file, line))
 		{
-			if (!GRIT_COUNT) temp = temp + static_cast<uint32_t>(((solid_share*max_solid) / 10000)*max_vol);
-			if (GRIT_COUNT) temp = temp + static_cast<uint32_t>(solid_share);
+			cout << line << "\n";
+			iss.clear();
+			iss.str(line);
+			iss >> scale >> solid_share;
+			if (!(options&GRIT_COUNT)) temp = temp + static_cast<uint32_t>(((solid_share*max_solid) / 10000)*max_vol);
+			if ((options&GRIT_COUNT)) temp = temp + static_cast<uint32_t>(solid_share);
 			por_threshold.insert(std::pair<double, uint32_t>(scale, temp));
 		}
 	}
@@ -72,7 +106,7 @@ Package::Package(std::string const& d) :pack_path(d)
 	it_now = por_threshold.rbegin();
 
 	//here the 3D Array for the Package is created this variable will be saved in output file
-		double i = 0;
+	double i = 0;
 	int perc = 10;
 	package.resize(dim_pack.x);
 	for (auto& y : package)
@@ -115,7 +149,7 @@ Package::~Package()
 inline void Package::spin_and_scale(coordinate<int> &v, const Grit& p)
 {
 	coordinate<double> x = v * static_cast<double>(1);
-	if (SPIN)
+	if (options&SPIN)
 	{
 		x = p.rot_v*(p.rot_v*x)*(1 - cos(p.rot_alpha))
 			+ x * cos(p.rot_alpha)
@@ -144,8 +178,8 @@ void Package::add_grit(Grit& p_to_add, const coordinate<int> &v)
 		n = n + v;
 		is_in_frame(n);
 		unsigned int fill;
-		if (FILL_HOLES)fill = v_fill.size();
-		if (!FILL_HOLES)fill = 1;
+		if (options&FILL_HOLES)fill = v_fill.size();
+		if (!(options&FILL_HOLES))fill = 1;
 		for (unsigned int i = 0; i < fill; i++)
 		{
 			fill_holes(n, i);
@@ -167,9 +201,9 @@ void Package::add_grit(Grit& p_to_add, const coordinate<int> &v)
 //checks for existing particles were new particle should be inserted
 void Package::check_if_free(Grit& p, const coordinate<int> & v)
 {
-	
+
 	p.get_rot_param(Random_V_double(dim_pack).normalized(), Random_No(M_PI * 2));
-	
+
 	real_scale = (it_now->first / por_threshold.rbegin()->first) + ((Random_No(scale_diversity * 2) / 100.0) - (scale_diversity / 100.0))* (it_now->first / por_threshold.rbegin()->first);
 	p.v_trans = v;
 	int n_new = 0;
@@ -205,8 +239,8 @@ void Package::fill_package(std::vector<Grit>& particles)
 
 	while (true)
 	{
-		if (it_now->second <= solid_vox && !GRIT_COUNT) ++it_now;
-		if (it_now->second <= count && GRIT_COUNT) ++it_now;
+		if (it_now->second <= solid_vox && !(options&GRIT_COUNT)) ++it_now;
+		if (it_now->second <= count && (options&GRIT_COUNT)) ++it_now;
 		if (it_now == por_threshold.rend())return;
 		tried++;
 		if (!(tried % 100000))cout << "|";
@@ -310,7 +344,7 @@ void Package::get_stat(const std::ostringstream& time, int& count_p_scale)
 		<< "\t" << solid_vox << "\n";
 	stat_general.push_back(oss2.str());
 	count_p_scale = 0;
-	if (COLOUR_ID)colour++;
+	if (options&COLOUR_ID)colour++;
 	if (colour > 16)colour = 1;
 }
 
@@ -341,8 +375,8 @@ void Package::status(Grit const& p)
 		<< "\n time to add: " << t - t_add << "sec";
 	count_p_scale++;
 
-	if (!GRIT_COUNT && solid_vox >= it_now->second)get_stat(time, count_p_scale);
-	if (GRIT_COUNT && count >= it_now->second)get_stat(time, count_p_scale);
+	if (!(options&GRIT_COUNT) && solid_vox >= it_now->second)get_stat(time, count_p_scale);
+	if ((options&GRIT_COUNT) && count >= it_now->second)get_stat(time, count_p_scale);
 
 	oss.flush();
 	oss << time.str()
@@ -351,7 +385,7 @@ void Package::status(Grit const& p)
 		<< "\t" << p.id
 		<< "\t" << added_vox
 		;
-	if (MORE_INFO)
+	if (options&MORE_INFO)
 	{
 		oss << "\t" << p.v_trans
 			<< "\t" << p.rot_v

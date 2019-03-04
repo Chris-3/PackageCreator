@@ -17,12 +17,12 @@ using std::cout;
 
 //extern options OPT;
 
-extern bool SPIN;
-extern bool GRIT_COUNT;
-extern bool MORE_INFO;
-extern bool FILL_HOLES;
-extern bool COLOUR_ID;
-extern bool LOAD_PACKAGE;
+//extern bool SPIN;
+//extern bool GRIT_COUNT;
+//extern bool MORE_INFO;
+//extern bool FILL_HOLES;
+//extern bool COLOUR_ID;
+//extern bool LOAD_PACKAGE;
 
 /*****************************************************************************
 the following class initialises the package, 
@@ -34,7 +34,7 @@ class Package
 {
 public:
 	//Constructor
-	Package(std::string const&);
+	Package(const std::string &, const int16_t &);
 	//Destructor
 	~Package();
 
@@ -48,6 +48,8 @@ public:
 	void status(Grit const&);
 
 private:
+	//options
+	const int16_t options;
 	//the data of this member will be saved in output file
 	std::vector<std::vector<std::vector<uint8_t>>> package;
 	//dimension of the created package

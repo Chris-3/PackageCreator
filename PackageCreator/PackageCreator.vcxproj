@@ -161,7 +161,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="get_filenames.h" />
-    <ClInclude Include="options.h" />
     <ClInclude Include="Package.h" />
     <ClInclude Include="Grit.h" />
     <ClInclude Include="random.h" />

@@ -5,27 +5,20 @@ using std::cout;
 using std::string;
 using namespace boost::filesystem;
 
-//extern options OPT;
 
-extern bool SPIN;
-extern bool GRIT_COUNT;
-extern bool MORE_INFO;
-extern bool FILL_HOLES;
-extern bool COLOUR_ID;
-extern bool LOAD_PACKAGE;
-extern bool CURRENT_DIR;
+
 
 //this function searches targed directory and saves all filenames in fnames 
-bool get_filenames(std::vector<std::string> &fnames)
+bool get_filenames(std::vector<std::string> &fnames, int16_t & options)
 {
 	path p;
 	try
 	{
-		if (CURRENT_DIR)
+		if (options&CURRENT_DIR)
 		{
 			p = current_path();
 		}
-		if (!CURRENT_DIR)
+		if (!(options&CURRENT_DIR))
 		{
 			cout << "\n Enter Working directory: \n";
 			std::cin >> p;
@@ -61,20 +54,21 @@ bool get_filenames(std::vector<std::string> &fnames)
 }
 
 //this function prints a menu to get the new default settings 
-void get_default_settings(int argc, char ** argv, std::vector<std::string>& fnames)
+void get_default_settings( std::vector<std::string>& fnames, int16_t &options)
 {
 	//OPT.COLOUR_ID = false;
 	char choice = ' ';
 	std::string dir;
 	for (;;)
 	{
+
 		cout << "\n 0 Start programm "
-			<< "\n 1 Spinning  of particles: " << (SPIN ? "on" : "off")
-			<< "\n 2 Count particles: " << (GRIT_COUNT ? "on" : "off")
-			<< "\n 3 Get more info in statistic file: " << (MORE_INFO ? "on" : "off")
-			<< "\n 4 Assign every basic scale a diffent ID: " << (COLOUR_ID ? "on" : "off")
-			<< "\n 5 Load existing Package: " << (LOAD_PACKAGE ? "on" : "off")
-			<< "\n 6 Change working directory: " << (CURRENT_DIR ? "off" : "on")
+			<< "\n 1 Spinning  of particles: " << ((options&SPIN) ? "on" : "off")
+			<< "\n 2 Count particles: " << ((options&GRIT_COUNT) ? "on" : "off")
+			<< "\n 3 Get more info in statistic file: " << ((options&MORE_INFO) ? "on" : "off")
+			<< "\n 4 Assign every basic scale a diffent ID: " << ((options&COLOUR_ID) ? "on" : "off")
+			<< "\n 5 Load existing Package: " << ((options&LOAD_PACKAGE) ? "on" : "off")
+			<< "\n 6 Change working directory: " << ((options&CURRENT_DIR) ? "off" : "on")
 			//<< "\n 7 Fill holes when overlapping voxels occur: " << (FILL_HOLES ? "on" : "off")
 			<< "\n\n To alter default settings press corresponding number, enter 0 to start program: "
 			;
@@ -84,29 +78,29 @@ void get_default_settings(int argc, char ** argv, std::vector<std::string>& fnam
 		switch (choice)
 		{
 		case '1':
-			SPIN = !SPIN;
+			options ^= SPIN;
 			continue;
 		case '2':
-			GRIT_COUNT = !GRIT_COUNT;
+			options ^= GRIT_COUNT;
 			continue;
 		case '3':
-			MORE_INFO = !MORE_INFO;
+			options ^= MORE_INFO;
 			continue;
 		case '4':
-			COLOUR_ID = !COLOUR_ID;
+			options ^= COLOUR_ID;
 			continue;
 		case '5':
-			LOAD_PACKAGE = !LOAD_PACKAGE;
+			options ^= LOAD_PACKAGE;
 			cout << "\n sorry doesn't work jet \n";
 			continue;
 		case '6':
-			CURRENT_DIR = !CURRENT_DIR;
+			options ^= CURRENT_DIR;
 			continue;
-		/*case '7':
-			FILL_HOLES = !FILL_HOLES;
-			continue;*/
+			/*case '7':
+				FILL_HOLES = !FILL_HOLES;
+				continue;*/
 		default:
-			while (!get_filenames(fnames));
+			while (!get_filenames(fnames,options));
 
 			return;
 		}
