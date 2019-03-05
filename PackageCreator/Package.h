@@ -107,6 +107,10 @@ private:
 	inline void fill_holes(coordinate<int>&, const int &);
 	//creates line for statistic for each particle added to package
 	void get_stat(const std::ostringstream&, int&);
+	//initialises empty package
+	void init_empty_pack();	
+	//loads eisting package from file
+	void load_pack();
 };
 
 

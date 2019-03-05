@@ -20,7 +20,7 @@ bool get_filenames(std::vector<std::string> &fnames, int16_t & options)
 		}
 		if (!(options&CURRENT_DIR))
 		{
-			cout << "\n Enter Working directory: \n";
+			cout << "\n Enter working directory: \n";
 			std::cin >> p;
 		}
 		if (exists(p))

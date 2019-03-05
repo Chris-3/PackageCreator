@@ -58,54 +58,8 @@ inline double Random_No(const double& n)
 	return p(rand);
 }
 
-Package::Package(const std::string & d, const int16_t & opt) :pack_path(d), options(opt)
+void Package::init_empty_pack()
 {
-	run_t = steady_clock::now();
-	std::fstream file(pack_path, std::ios_base::in);
-	double scale = 0.0, solid_share = 0.0;
-	uint32_t temp = 0;
-	std::string line;
-	std::istringstream iss;
-	tried = 0;
-	colour = 1;
-	grit_choice = 0;
-	//here Parameters are read from Parameter file
-	if (file.is_open())
-	{
-		std::getline(file, line);
-		cout << line << "\n";
-		std::getline(file, line);
-		cout << line << "\n";
-		iss.str(line);
-		iss >> dim_pack.x >> dim_pack.y >> dim_pack.z;
-		cout << dim_pack << "\n";
-		std::getline(file, line);
-		cout << line << "\n";
-		std::getline(file, line);
-		iss.clear();
-		iss.str(line);
-		iss >> max_solid >> scale_diversity;
-		max_vol = dim_pack.x*dim_pack.y*dim_pack.z;
-		cout << line << " " << max_solid << " " << scale_diversity << "\n";
-		std::getline(file, line);
-		cout << line << "\n" << "\n";
-
-		//while (file >> scale >> solid_share)
-		while (std::getline(file, line))
-		{
-			cout << line << "\n";
-			iss.clear();
-			iss.str(line);
-			iss >> scale >> solid_share;
-			if (!(options&GRIT_COUNT)) temp = temp + static_cast<uint32_t>(((solid_share*max_solid) / 10000)*max_vol);
-			if ((options&GRIT_COUNT)) temp = temp + static_cast<uint32_t>(solid_share);
-			por_threshold.insert(std::pair<double, uint32_t>(scale, temp));
-		}
-	}
-	file.close();
-	it_now = por_threshold.rbegin();
-
-	//here the 3D Array for the Package is created this variable will be saved in output file
 	double i = 0;
 	int perc = 10;
 	package.resize(dim_pack.x);
@@ -124,6 +78,82 @@ Package::Package(const std::string & d, const int16_t & opt) :pack_path(d), opti
 
 		i++;
 	}
+}
+
+void Package::load_pack()
+{
+	std::string str;
+	std::cout << "Enter filename of package to load (full path is required if file is not in working directory):/n";
+	std::cin >> str;
+	std::fstream file_pack(str, std::ios_base::in);
+	coordinate<int> dim_pack_old;
+	file_pack >> dim_pack_old.x >> dim_pack_old.y >> dim_pack_old.z;
+	uint8_t voxl =0;
+	uint32_t count = 0;
+	init_empty_pack();
+	while (file_pack >> voxl)
+	{
+		if (voxl)
+		{
+			coordinate<int> v = { static_cast<int>(count / (dim_pack_old.z*dim_pack_old.y))
+					, static_cast<int>((count % (dim_pack_old.z*dim_pack_old.y)) / dim_pack_old.z)
+					, static_cast<int>(count%dim_pack_old.z) };
+			if ((v.x < dim_pack.x) && (v.z < dim_pack.z) && (v.z < dim_pack.z))
+			{
+				package[v.x][v.y][v.z] = voxl;
+				solid_vox++;
+			}
+		}
+		count++;
+	}
+}
+
+Package::Package(const std::string & d, const int16_t & opt) :pack_path(d), options(opt)
+{
+	run_t = steady_clock::now();
+	std::fstream file(pack_path, std::ios_base::in);
+	double scale = 0.0, solid_share = 0.0;
+	uint32_t temp = 0;
+	std::string line;
+	std::istringstream iss;
+	tried = 0;
+	colour = 1;
+	grit_choice = 0;
+	//here Parameters are read from Parameter file
+	if (file.is_open())
+	{
+		std::getline(file, line);
+		std::getline(file, line);
+		iss.str(line);
+		iss >> dim_pack.x >> dim_pack.y >> dim_pack.z;
+		std::getline(file, line);
+		std::getline(file, line);
+		iss.clear();
+		iss.str(line);
+		iss >> max_solid >> scale_diversity;
+		max_vol = dim_pack.x*dim_pack.y*dim_pack.z;
+		std::getline(file, line);
+
+		//while (file >> scale >> solid_share)
+		while (std::getline(file, line))
+		{
+			iss.clear();
+			iss.str(line);
+			iss >> scale >> solid_share;
+			if (!(options&GRIT_COUNT)) temp = temp + static_cast<uint32_t>(((solid_share*max_solid) / 10000)*max_vol);
+			if ((options&GRIT_COUNT)) temp = temp + static_cast<uint32_t>(solid_share);
+			por_threshold.insert(std::pair<double, uint32_t>(scale, temp));
+		}
+	}
+	file.close();
+	it_now = por_threshold.rbegin();
+
+	//here the 3D Array for the Package is created this variable will be saved in output file
+	
+	
+	if (!(options&LOAD_PACKAGE)) init_empty_pack();
+	if (options&LOAD_PACKAGE) load_pack();
+
 	//here is a general summery of the stats printed in command line
 	cout << "\n\n Package parameters:"
 		<< "\n Package volume: " << max_vol
@@ -178,8 +208,8 @@ void Package::add_grit(Grit& p_to_add, const coordinate<int> &v)
 		n = n + v;
 		is_in_frame(n);
 		unsigned int fill;
-		if (options&FILL_HOLES)fill = v_fill.size();
-		if (!(options&FILL_HOLES))fill = 1;
+		if (options&FILL_HOLES) fill = v_fill.size();
+		if (!(options&FILL_HOLES)) fill = 1;
 		for (unsigned int i = 0; i < fill; i++)
 		{
 			fill_holes(n, i);
