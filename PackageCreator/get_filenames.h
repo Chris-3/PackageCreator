@@ -35,6 +35,28 @@ bool get_filenames(std::vector<std::string> &fnames, int16_t & options)
 					std::string n = x.path().generic_string();
 					fnames.push_back(n);
 				}
+				if (options&LOAD_PACKAGE)
+				{
+					while (1)
+					{
+						int old_size = fnames.size();
+						std::string str;
+						std::cout << "Enter filename of package to load (only files in working directory can be loaded):\n";
+						std::cin >> str;
+						for (auto const& n : fnames)
+						{
+							if (n.find(str) != std::string::npos)
+							{
+								fnames.push_back(n);
+								break;
+							}
+						}
+						if (old_size != fnames.size())break;
+
+						cout << "\n No file named \"" << str << "\" found!\n";
+
+					}
+				}
 				return true;
 			}
 			else
@@ -43,7 +65,7 @@ bool get_filenames(std::vector<std::string> &fnames, int16_t & options)
 		}
 		else
 			cout << p << " does not exist\n";
-		return false;
+				return false;
 	}
 
 	catch (const filesystem_error& ex)
@@ -54,7 +76,7 @@ bool get_filenames(std::vector<std::string> &fnames, int16_t & options)
 }
 
 //this function prints a menu to get the new default settings 
-void get_default_settings( std::vector<std::string>& fnames, int16_t &options)
+void get_default_settings(std::vector<std::string>& fnames, int16_t &options)
 {
 	//OPT.COLOUR_ID = false;
 	char choice = ' ';
@@ -91,7 +113,6 @@ void get_default_settings( std::vector<std::string>& fnames, int16_t &options)
 			continue;
 		case '5':
 			options ^= LOAD_PACKAGE;
-			cout << "\n sorry doesn't work jet \n";
 			continue;
 		case '6':
 			options ^= CURRENT_DIR;
@@ -100,7 +121,7 @@ void get_default_settings( std::vector<std::string>& fnames, int16_t &options)
 				FILL_HOLES = !FILL_HOLES;
 				continue;*/
 		default:
-			while (!get_filenames(fnames,options));
+			while (!get_filenames(fnames, options));
 
 			return;
 		}

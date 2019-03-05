@@ -34,7 +34,7 @@ class Package
 {
 public:
 	//Constructor
-	Package(const std::string &, const int16_t &);
+	Package(const std::string &, const int16_t &, const std::string &);
 	//Destructor
 	~Package();
 
@@ -110,7 +110,7 @@ private:
 	//initialises empty package
 	void init_empty_pack();	
 	//loads eisting package from file
-	void load_pack();
+	void load_pack(const std::string &);
 };
 
 

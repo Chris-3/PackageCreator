@@ -37,8 +37,8 @@ int main(int argc, char* argv[])
 	{
 		if (param.find("Parameter") != std::string::npos)
 		{
-			Package pack(param,options);//class Package is initialised with parameter file
-
+			Package pack(param,options,fnames.back());//class Package is initialised with parameter file
+			
 			std::vector<Grit> x;//this will be the list of the original particles
 
 			if (!getGritsofScale(x, fnames, pack.get_scale()->first))

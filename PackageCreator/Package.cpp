@@ -80,19 +80,20 @@ void Package::init_empty_pack()
 	}
 }
 
-void Package::load_pack()
+void Package::load_pack(const std::string & str)
 {
-	std::string str;
-	std::cout << "Enter filename of package to load (full path is required if file is not in working directory):/n";
-	std::cin >> str;
+	
 	std::fstream file_pack(str, std::ios_base::in);
 	coordinate<int> dim_pack_old;
 	file_pack >> dim_pack_old.x >> dim_pack_old.y >> dim_pack_old.z;
-	uint8_t voxl =0;
+	uint8_t voxl = 0;
 	uint32_t count = 0;
-	init_empty_pack();
+	int perc = 10;
+
+	cout << "loading package from: " << str << "\n";
 	while (file_pack >> voxl)
 	{
+		voxl = voxl - 48;
 		if (voxl)
 		{
 			coordinate<int> v = { static_cast<int>(count / (dim_pack_old.z*dim_pack_old.y))
@@ -104,11 +105,16 @@ void Package::load_pack()
 				solid_vox++;
 			}
 		}
+		if (perc < (count / (dim_pack_old.x*dim_pack_old.z*dim_pack_old.y) * 100))
+		{
+			std::cout << "Load package: " << perc << "%\n";
+			perc += 10;
+		}
 		count++;
 	}
 }
 
-Package::Package(const std::string & d, const int16_t & opt) :pack_path(d), options(opt)
+Package::Package(const std::string & d, const int16_t & opt, const std::string & load_file) :pack_path(d), options(opt)
 {
 	run_t = steady_clock::now();
 	std::fstream file(pack_path, std::ios_base::in);
@@ -151,8 +157,8 @@ Package::Package(const std::string & d, const int16_t & opt) :pack_path(d), opti
 	//here the 3D Array for the Package is created this variable will be saved in output file
 	
 	
-	if (!(options&LOAD_PACKAGE)) init_empty_pack();
-	if (options&LOAD_PACKAGE) load_pack();
+	init_empty_pack();
+	if (options&LOAD_PACKAGE) load_pack(load_file);
 
 	//here is a general summery of the stats printed in command line
 	cout << "\n\n Package parameters:"
