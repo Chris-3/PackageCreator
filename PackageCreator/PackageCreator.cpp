@@ -19,6 +19,18 @@ enum opt_flags
 #include "Grit.h"
 #include "Package.h"
 
+//this part handles user interupt signals to make shure programm shuts down with saving
+sig_atomic_t stopFlag =0;
+void handler(int)
+{
+	
+	cout <<"\n\n======================================================\n"
+		<< "------------------Interupt detected!------------------\n"
+		<< " -> wait for saving current progress\n -> press strg + c a second time for immediate shutdown"
+		<< "\n======================================================\n\n"
+		;
+	stopFlag = 1;
+}
 
 
 // this function searches for every file named "Particle_" and creates a Grit object for each
@@ -26,6 +38,7 @@ bool getGritsofScale(std::vector<Grit> &, const std::vector<std::string> &, cons
 
 int main(int argc, char* argv[])
 {
+	signal(SIGINT, handler);
 	int16_t options = SPIN + COLOUR_ID + CURRENT_DIR;
 
 	cout << "\n*********PackageCreator*********\n";

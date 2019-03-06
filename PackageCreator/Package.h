@@ -8,21 +8,15 @@
 #include <ctime>
 #include <ratio>
 #include <chrono>
+#include <signal.h>
 
 #include "Grit.h"
 
 
 using namespace std::chrono;
 using std::cout;
+extern sig_atomic_t stopFlag;
 
-//extern options OPT;
-
-//extern bool SPIN;
-//extern bool GRIT_COUNT;
-//extern bool MORE_INFO;
-//extern bool FILL_HOLES;
-//extern bool COLOUR_ID;
-//extern bool LOAD_PACKAGE;
 
 /*****************************************************************************
 the following class initialises the package, 
@@ -30,7 +24,8 @@ scales and spinnes the particles, adds them to the package
 and documents the data
 *****************************************************************************/
 
-class Package
+
+class Package 
 {
 public:
 	//Constructor
@@ -47,6 +42,7 @@ public:
 	//prints the current status after adding particle/grit
 	void status(Grit const&);
 
+	
 private:
 	//options
 	const int16_t options;
@@ -111,6 +107,8 @@ private:
 	void init_empty_pack();	
 	//loads eisting package from file
 	void load_pack(const std::string &);
+
+	
 };
 
 

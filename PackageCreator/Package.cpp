@@ -88,9 +88,9 @@ void Package::load_pack(const std::string & str)
 	file_pack >> dim_pack_old.x >> dim_pack_old.y >> dim_pack_old.z;
 	uint8_t voxl = 0;
 	uint32_t count = 0;
-	int perc = 10;
+	uint16_t perc = 10;
 
-	cout << "loading package from: " << str << "\n";
+	cout << "\n loading package from: " << str << "\n";
 	while (file_pack >> voxl)
 	{
 		voxl = voxl - 48;
@@ -105,7 +105,7 @@ void Package::load_pack(const std::string & str)
 				solid_vox++;
 			}
 		}
-		if (perc < (count / (dim_pack_old.x*dim_pack_old.z*dim_pack_old.y) * 100))
+		if (perc < ((count * 100) / (dim_pack_old.x*dim_pack_old.z*dim_pack_old.y) ))
 		{
 			std::cout << "Load package: " << perc << "%\n";
 			perc += 10;
@@ -116,6 +116,8 @@ void Package::load_pack(const std::string & str)
 
 Package::Package(const std::string & d, const int16_t & opt, const std::string & load_file) :pack_path(d), options(opt)
 {
+	
+	
 	run_t = steady_clock::now();
 	std::fstream file(pack_path, std::ios_base::in);
 	double scale = 0.0, solid_share = 0.0;
@@ -207,7 +209,6 @@ inline void Package::fill_holes(coordinate<int>& n, const int &i)
 void Package::add_grit(Grit& p_to_add, const coordinate<int> &v)
 {
 	added_vox = 0;
-	if (DEBUG) std::cout << "\n Patikel einfuegen\n";
 	for (auto n : p_to_add.p_img)
 	{
 		spin_and_scale(n, p_to_add);
@@ -277,7 +278,7 @@ void Package::fill_package(std::vector<Grit>& particles)
 	{
 		if (it_now->second <= solid_vox && !(options&GRIT_COUNT)) ++it_now;
 		if (it_now->second <= count && (options&GRIT_COUNT)) ++it_now;
-		if (it_now == por_threshold.rend())return;
+		if (it_now == por_threshold.rend()||stopFlag)return;
 		tried++;
 		if (!(tried % 100000))cout << "|";
 		if (!(tried % 1000000))cout << "X";
