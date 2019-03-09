@@ -103,6 +103,7 @@ void Package::load_pack(const std::string & str)
 			{
 				package[v.x][v.y][v.z] = voxl;
 				solid_vox++;
+				if (voxl > colour)colour = voxl;
 			}
 		}
 		if (perc < ((count * 100) / (dim_pack_old.x*dim_pack_old.z*dim_pack_old.y) ))
@@ -112,6 +113,8 @@ void Package::load_pack(const std::string & str)
 		}
 		count++;
 	}
+	if (options&COLOUR_ID)colour++;
+	if (colour > 16)colour = 1;
 }
 
 Package::Package(const std::string & d, const int16_t & opt, const std::string & load_file) :pack_path(d), options(opt)
